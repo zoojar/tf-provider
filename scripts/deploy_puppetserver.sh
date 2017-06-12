@@ -1,9 +1,6 @@
 #!/bin/bash
 # Deploy script for Puppetserver, installs, configures & starts Puppetserver
 
-#Terminate on error...
-set -e
-
 #Defaults:
 log_file='/tmp/deploy_puppetserver.log'
 psk_default='changeme'

@@ -52,8 +52,9 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
   
   ### Environment specific stuff...
-  provisioner "remote-exec" { ### add route back to vpn
+  provisioner "remote-exec" { ### block internet & add route back to vpn
     inline = [
+      "route add default gw 192.168.0.2",
       "ip route add 10.8.0.0/24 via 192.168.0.1",
     ]
   }
