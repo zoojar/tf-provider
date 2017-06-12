@@ -62,8 +62,8 @@ done
 echo "$(date) INFO: Deploying Gitlab via Puppet..." | tee -a  $log_file
 cat >$deploy_gitlab_pp <<'EOF'
   class { 'gitlab':
-    external_url     => "http://${::hostname}.${domain}",
-    #package_ensure   => '7.14.3-ce.1.el6',
+    external_url        => "http://${::hostname}.${domain}",
+    manage_package_repo => false,
   }
   firewall { '080 acc tcp dport 80': proto  => 'tcp', dport  => 80, action => 'accept' } 
   firewall { '443 acc tcp dport 443': proto => 'tcp', dport  => 443, action => 'accept' }
