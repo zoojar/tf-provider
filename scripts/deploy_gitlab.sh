@@ -49,6 +49,7 @@ firewall-cmd --reload
 
 echo "$(date) INFO: Installing [$puppet-agent] via YUM..." | tee -a  $log_file
 yum install -y $puppet_package
+export PATH="$PATH:/opt/puppetlabs/bin"
 
 echo "$(date) INFO: Downloading & installing Puppet modules from [$module_baseurl]" | tee -a  $log_file
 puppet resource file $tmp_puppet_modules ensure=directory
