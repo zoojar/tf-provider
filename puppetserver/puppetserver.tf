@@ -4,8 +4,8 @@ variable "vsphere_user" {}
 variable "vsphere_password" {}
 variable "vsphere_server" {}
 variable "template" { type = "string" default = "rhel-server-7.3-x86_64_vmtools" }
-variable "memory_mb" {}
-variable "vcpu_count" {}
+variable "memory_mb" { type = "string" default = "4000" }
+variable "vcpu_count" { type = "string" default = "1" }
 variable "vm_network" { type = "string" default = "VM Network" }
 variable "ipv4_address" {}
 variable "ipv4_gateway" {}

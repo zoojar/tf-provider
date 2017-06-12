@@ -3,8 +3,8 @@ variable "vsphere_user" {}
 variable "vsphere_password" {}
 variable "vsphere_server" {}
 variable "template" { type = "string" default = "rhel-server-7.3-x86_64_vmtools" }
-variable "memory_mb" {}
-variable "vcpu_count" {}
+variable "memory_mb" { type = "string" default = "2000" }
+variable "vcpu_count" { type = "string" default = "1" }
 variable "vm_network" { type = "string" default = "VM Network" }
 variable "ipv4_address" {}
 variable "ipv4_gateway" {}
@@ -25,7 +25,7 @@ provider "vsphere" {
 
 resource "vsphere_virtual_machine" "repohost" {
   name         = "${var.hostname}"
-  vcpu         = 1
+  vcpu         = "${var.vcpu_count}"
   memory       = "${var.memory_mb}"
   datacenter   = "${var.datacenter}"
   dns_servers  = "${var.dns_servers}"
