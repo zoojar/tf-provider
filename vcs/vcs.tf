@@ -1,10 +1,11 @@
+
 variable "datacenter"         {}         
 variable "vsphere_user"       {}
 variable "vsphere_password"   {}
 variable "vsphere_server"     {}
 variable "template"           { type = "string" default = "rhel-server-7.3-x86_64_vmtools" }
-variable "memory_mb"          { type = "string" default = "4000" }
-variable "vcpu_count"         { type = "string" default = "1" }
+variable "memory_mb"          { type = "string" default = "2000" }
+variable "vcpu_count"         { type = "string" default = "2" }
 variable "vm_network"         { type = "string" default = "VM Network" }
 variable "ipv4_address"       {}
 variable "ipv4_prefix_length" { type = "string" default = "24" }
@@ -14,9 +15,11 @@ variable "ssh_username"       {}
 variable "ssh_password"       {}
 variable "hostname"           {}
 
-variable "yumrepo_baseurl"    {}
-variable "psk"                {}
-variable "control_repo"       {}
+variable "yumrepo_baseurl"        {}
+variable "puppet_modules_baseurl" {}
+variable "puppetserver_ip"        {}
+variable "puppetserver_fqdn"      {}
+variable "psk"                    {}
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -26,7 +29,7 @@ provider "vsphere" {
   allow_unverified_ssl = true
 }
 
-resource "vsphere_virtual_machine" "puppetserver" {
+resource "vsphere_virtual_machine" "vcs" {
   name         = "${var.hostname}"
   vcpu         = "${var.vcpu_count}"
   memory       = "${var.memory_mb}"
@@ -47,27 +50,15 @@ resource "vsphere_virtual_machine" "puppetserver" {
 
   connection {
     type     = "ssh"
-    user     = "${var.ssh_username}"
-    password = "${var.ssh_password}"
-  }
-  
-  ### Environment specific stuff...
-  provisioner "remote-exec" { ### add route back to vpn
-    inline = [
-      "ip route add 10.8.0.0/24 via 192.168.0.1",
-    ]
-  }
-  ###
-
-  provisioner "file" {
-    source      = "scripts"
-    destination = "/tmp"
+    user     = "root"
+    password = "root"
   }
   
   provisioner "remote-exec" {
     inline = [
+      ". /tmp/scripts/set_etc_hosts.sh ${var.puppetserver_ip} ${var.puppetserver_fqdn}"
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
-      ". /tmp/scripts/deploy_puppetserver.sh --psk=${var.psk} --control_repo=${var.control_repo}",
+      ". /tmp/scripts/deploy_gitlab.sh --puppet_modules_baseurl=${var.puppet_modules_baseurl}",
     ]
   }
 

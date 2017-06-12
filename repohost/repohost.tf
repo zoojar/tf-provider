@@ -1,19 +1,20 @@
-variable "datacenter" {}         
-variable "vsphere_user" {}
-variable "vsphere_password" {}
-variable "vsphere_server" {}
-variable "template" { type = "string" default = "rhel-server-7.3-x86_64_vmtools" }
-variable "memory_mb" { type = "string" default = "2000" }
-variable "vcpu_count" { type = "string" default = "1" }
-variable "vm_network" { type = "string" default = "VM Network" }
-variable "ipv4_address" {}
-variable "ipv4_gateway" {}
-variable "dns_servers" { type = "list" }
-variable "ssh_username" {}
-variable "ssh_password" {}
-variable "hostname" {}
+variable "datacenter"         {}         
+variable "vsphere_user"       {}
+variable "vsphere_password"   {}
+variable "vsphere_server"     {}
+variable "template"           { type = "string" default = "rhel-server-7.3-x86_64_vmtools" }
+variable "memory_mb"          { type = "string" default = "2000" }
+variable "vcpu_count"         { type = "string" default = "1" }
+variable "vm_network"         { type = "string" default = "VM Network" }
+variable "ipv4_address"       {}
+variable "ipv4_prefix_length" { type = "string" default = "24" }
+variable "ipv4_gateway"       {}
+variable "dns_servers"        { type = "list" }
+variable "ssh_username"       {}
+variable "ssh_password"       {}
+variable "hostname"           {}
 
-variable "yumrepo_baseurl" {}
+variable "yumrepo_baseurl"    {}
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -33,13 +34,13 @@ resource "vsphere_virtual_machine" "repohost" {
   network_interface {
     label              = "${var.vm_network}"
     ipv4_address       = "${var.ipv4_address}"
-    ipv4_prefix_length = "24"
+    ipv4_prefix_length = "${var.ipv4_prefix_length}"
     ipv4_gateway       = "${var.ipv4_gateway}"
   }
 
   disk {
     type     = "thin" 
-    template = "${var.template}"
+    template = "${var.template}" 
   }
   
   connection {

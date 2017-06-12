@@ -5,7 +5,7 @@
 set -e
 
 #Defaults:
-log_file='/tmp/install_aio_mom.log'
+log_file='/tmp/deploy_puppetserver.log'
 psk_default='changeme'
 r10k_remote_default="https://git.local/control-repo"
 autosign_sh='/etc/puppetlabs/puppet/autosign.sh'
