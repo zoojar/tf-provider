@@ -17,9 +17,6 @@ variable "hostname"           {}
 
 variable "yumrepo_baseurl"        {}
 variable "puppet_modules_baseurl" {}
-variable "puppetserver_ip"        {}
-variable "puppetserver_fqdn"      {}
-variable "psk"                    {}
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -56,7 +53,6 @@ resource "vsphere_virtual_machine" "vcs" {
   
   provisioner "remote-exec" {
     inline = [
-      ". /tmp/scripts/set_etc_hosts.sh ${var.puppetserver_ip} ${var.puppetserver_fqdn}",
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       ". /tmp/scripts/deploy_gitlab.sh --puppet_modules_baseurl=${var.puppet_modules_baseurl}",
     ]
