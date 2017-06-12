@@ -50,6 +50,11 @@ resource "vsphere_virtual_machine" "vcs" {
     user     = "root"
     password = "root"
   }
+
+  provisioner "file" {
+    source      = "scripts"
+    destination = "/tmp"
+  }
   
   provisioner "remote-exec" {
     inline = [
