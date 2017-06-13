@@ -64,12 +64,7 @@ echo "$(date) INFO: Installing puppetserver..." | tee -a $log_file
 yum -y install puppetserver
 
 echo "$(date) INFO: Setting env path for Puppet & r10k..." | tee -a $log_file
-PATH="/opt/puppetlabs/bin:/opt/puppetlabs/puppet/bin:/opt/puppet/bin:/usr/bin:$PATH"
-
-echo "$(date) INFO: Configuring R10k..." | tee -a $log_file
-puppet module install puppet-r10k --version 4.2.0
-puppet apply -e "class {'r10k': remote => '$r10k_remote',}"
-r10k deploy environment --puppetfile -v
+export PATH="/opt/puppetlabs/bin:/opt/puppetlabs/puppet/bin:/opt/puppet/bin:/usr/bin:$PATH"
 
 if [[ ! -z $psk ]]; then
 echo "$(date) INFO: Configuring autosigning..." | tee -a $log_file

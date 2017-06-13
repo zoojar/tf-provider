@@ -17,6 +17,9 @@ variable "hostname"           {}
 variable "yumrepo_baseurl"    {}
 variable "psk"                {}
 variable "control_repo"       {}
+variable "git_server"         {}
+variable "git_user"           {}
+variable "git_password"       {}
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -69,6 +72,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
     inline = [
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       ". /tmp/scripts/deploy_puppetserver.sh --psk=${var.psk} --control_repo=${var.control_repo}",
+      ". /tmp/scripts/configure_control_repo.sh --git_server=${var.git_server} --git_user=${var.git_user} --git_password=${var.git_password}"
     ]
   }
 

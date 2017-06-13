@@ -34,6 +34,20 @@ while test $# -gt 0; do
                         puppet_modules_baseurl=`echo $1 | sed -e 's/^[^=]*=//g'`
                         shift
                         ;;
+                -p)
+                        shift
+                        if test $# -gt 0; then
+                                initial_root_password=$1
+                        else
+                                echo "ERROR: --initial_root_password|-p NOT specified."
+                                exit 1
+                        fi
+                        shift
+                        ;;
+                --initial_root_password*)
+                        initial_root_password=`echo $1 | sed -e 's/^[^=]*=//g'`
+                        shift
+                        ;;      
                 *)
                         break
                         ;;
@@ -60,11 +74,11 @@ for module in $puppet_modules ; do
 done
 
 echo "$(date) INFO: Deploying Gitlab via Puppet..." | tee -a  $log_file
-cat >$deploy_gitlab_pp <<'EOF'
+cat >$deploy_gitlab_pp <<EOF
   class { 'gitlab':
-    external_url        => "http://${::hostname}.${domain}",
+    external_url        => "http://\${::hostname}.\${domain}",
     manage_package_repo => false,
-    gitlab_rails => { 'initial_root_password' => 'CHANGEME' },
+    gitlab_rails => { 'initial_root_password' => '${initial_root_password}' },
   }
   firewall { '080 acc tcp dport 80': proto  => 'tcp', dport  => 80, action => 'accept' } 
   firewall { '443 acc tcp dport 443': proto => 'tcp', dport  => 443, action => 'accept' }

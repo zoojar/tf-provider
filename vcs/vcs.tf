@@ -68,7 +68,7 @@ resource "vsphere_virtual_machine" "vcs" {
   provisioner "remote-exec" {
     inline = [
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
-      ". /tmp/scripts/deploy_gitlab.sh --puppet_modules_baseurl=${var.puppet_modules_baseurl}",
+      ". /tmp/scripts/deploy_gitlab.sh --puppet_modules_baseurl=${var.puppet_modules_baseurl} --initial_root_password=${var.initial_root_password}",
     ]
   }
 
