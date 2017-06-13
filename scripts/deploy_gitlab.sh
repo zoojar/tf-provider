@@ -61,7 +61,7 @@ done
 
 echo "$(date) INFO: Deploying Gitlab via Puppet..." | tee -a  $log_file
 cat >$deploy_gitlab_pp <<'EOF'
-  Exec <| tag == 'gitlab_setup' |> {
+  Exec <| title == 'gitlab_setup' |> {
     environment => ['GITLAB_ROOT_PASSWORD=88888888'],
   }
   class { 'gitlab':
