@@ -18,6 +18,7 @@ variable "yumrepo_baseurl"        {}
 variable "psk"                    {}
 variable "control_repo"           {}
 variable "git_server"             {}
+variable "git_server_ip"          {}
 variable "git_user"               {}
 variable "git_password"           {}
 variable "puppet_modules_baseurl" {}
@@ -73,6 +74,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
     inline = [
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       ". /tmp/scripts/deploy_puppetserver.sh --psk=${var.psk}",
+      "puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
       ". /tmp/scripts/configure_control_repo.sh --puppet_modules_baseurl=${var.puppet_modules_baseurl} --git_server=${var.git_server} --git_user=${var.git_user} --git_password=${var.git_password}"
     ]
   }
