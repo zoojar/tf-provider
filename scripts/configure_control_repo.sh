@@ -7,6 +7,7 @@ configure_control_repo_pp='/tmp/configure_control_repo.pp'
 tmp_puppet_modules='/tmp/puppet_modules'
 read -d '' puppet_modules <<'EOF'
 puppet-r10k-6.0.0.tar.gz
+abrader-gms-1.0.3.tar.gz
 EOF
 
 while test $# -gt 0; do
