@@ -4,7 +4,6 @@
 #Defaults:
 log_file='/tmp/deploy_puppetserver.log'
 psk_default='changeme'
-r10k_remote_default="https://git.local/control-repo"
 autosign_sh='/etc/puppetlabs/puppet/autosign.sh'
 
 while test $# -gt 0; do
@@ -13,22 +12,7 @@ while test $# -gt 0; do
                         echo "options:"
                         echo "-h, --help                         Show help."
                         echo "-p, --psk=PSK                      IP address of puppet master (used for setting /etc/hosts)."
-                        echo "-c --control_repo=URL              URL of control repo (for r10k setup)"
                         exit 0
-                        ;;
-                -c)
-                        shift
-                        if test $# -gt 0; then
-                                r10k_remote=$1
-                        else
-                                echo "INFO: No control-repo URL specified - using default: $r10k_remote_default"
-                                r10k_remote=$r10k_remote_default
-                        fi
-                        shift
-                        ;;
-                --control_repo*)
-                        r10k_remote=`echo $1 | sed -e 's/^[^=]*=//g'`
-                        shift
                         ;;
                 -p)
                         shift
