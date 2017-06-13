@@ -4,17 +4,36 @@
 #Defaults:
 log_file='/tmp/configure_control_repo.log'
 configure_control_repo_pp='/tmp/configure_control_repo.pp'
+tmp_puppet_modules='/tmp/puppet_modules'
+read -d '' puppet_modules <<'EOF'
+puppet-r10k-6.0.0.tar.gz
+EOF
 
 while test $# -gt 0; do
         case "$1" in
                 -h|--help)
                         echo "options:"
                         echo "-h, --help                         Show help."
+                        echo "-m, --puppet_modules_baseurl       Base URL for downloading Puppet modules, example: http://repohost.local/puppet_modules"                     
                         echo "-s, --git_server=FQDN              Git server FQDN."
                         echo "-u, --git_user=USER                Git api user."
                         echo "-p, --git_password=PASSWORD        Git api password."
                         echo "-r, --r10k_remote=GIT_REMOTE       Git remote, eg: git@gitlab.local:root/control-repo.git."
                         exit 0
+                        ;;
+                -m)
+                        shift
+                        if test $# -gt 0; then
+                                puppet_modules_baseurl=$1
+                        else
+                                echo "ERROR: --module_baseurl|-m NOT specified."
+                                exit 1
+                        fi
+                        shift
+                        ;;
+                --puppet_modules_baseurl*)
+                        puppet_modules_baseurl=`echo $1 | sed -e 's/^[^=]*=//g'`
+                        shift
                         ;;
                 -s)
                         shift
@@ -97,8 +116,15 @@ echo "$(date) INFO: Generating SSH key for r10k..." | tee -a $log_file
 yes y | ssh-keygen -t dsa -C "r10k" -f /root/.ssh/id_dsa_r10k -q -N ''
 r10k_public_key=$(cat /root/.ssh/id_dsa_r10k.pub) #=r10k_public_key
 
+echo "$(date) INFO: Downloading & installing Puppet modules from [$puppet_modules_baseurl]" | tee -a  $log_file
+puppet resource file $tmp_puppet_modules ensure=directory
+IFS=$'\n'
+for module in $puppet_modules ; do
+  puppet resource file $tmp_puppet_modules/$module ensure=file source=$puppet_modules_baseurl/$module
+  puppet module install $tmp_puppet_modules/$module --ignore-dependencies
+done
+
 echo "$(date) INFO: Configuring control-repo & R10k via Gitlab API..." | tee -a $log_file
-puppet module install puppet-r10k --version 4.2.0
 cat >$configure_control_repo_pp <<EOF
   sshkey { '$git_server':
     ensure => present,

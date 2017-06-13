@@ -1,25 +1,26 @@
-variable "datacenter"         {}         
-variable "vsphere_user"       {}
-variable "vsphere_password"   {}
-variable "vsphere_server"     {}
-variable "template"           { type = "string" default = "rhel-server-7.3-x86_64_vmtools" }
-variable "memory_mb"          { type = "string" default = "4000" }
-variable "vcpu_count"         { type = "string" default = "1" }
-variable "vm_network"         { type = "string" default = "VM Network" }
-variable "ipv4_address"       {}
-variable "ipv4_prefix_length" { type = "string" default = "24" }
-variable "ipv4_gateway"       {}
-variable "dns_servers"        { type = "list" }
-variable "ssh_username"       {}
-variable "ssh_password"       {}
-variable "hostname"           {}
-
-variable "yumrepo_baseurl"    {}
-variable "psk"                {}
-variable "control_repo"       {}
-variable "git_server"         {}
-variable "git_user"           {}
-variable "git_password"       {}
+variable "datacenter"             {}         
+variable "vsphere_user"           {}
+variable "vsphere_password"       {}
+variable "vsphere_server"         {}
+variable "template"               { type = "string" default = "rhel-server-7.3-x86_64_vmtools" }
+variable "memory_mb"              { type = "string" default = "4000" }
+variable "vcpu_count"             { type = "string" default = "1" }
+variable "vm_network"             { type = "string" default = "VM Network" }
+variable "ipv4_address"           {}
+variable "ipv4_prefix_length"     { type = "string" default = "24" }
+variable "ipv4_gateway"           {}
+variable "dns_servers"            { type = "list" }
+variable "ssh_username"           {}
+variable "ssh_password"           {}
+variable "hostname"               {}
+    
+variable "yumrepo_baseurl"        {}
+variable "psk"                    {}
+variable "control_repo"           {}
+variable "git_server"             {}
+variable "git_user"               {}
+variable "git_password"           {}
+variable "puppet_modules_baseurl" {}
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -72,7 +73,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
     inline = [
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       ". /tmp/scripts/deploy_puppetserver.sh --psk=${var.psk}",
-      ". /tmp/scripts/configure_control_repo.sh --git_server=${var.git_server} --git_user=${var.git_user} --git_password=${var.git_password}"
+      ". /tmp/scripts/configure_control_repo.sh --puppet_modules_baseurl=${var.puppet_modules_baseurl} --git_server=${var.git_server} --git_user=${var.git_user} --git_password=${var.git_password}"
     ]
   }
 

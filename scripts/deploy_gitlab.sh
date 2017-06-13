@@ -17,7 +17,7 @@ while test $# -gt 0; do
                 -h|--help)
                         echo "options:"
                         echo "-h, --help                        Show help."
-                        echo "-m, --module_baseurl              Base URL for downloading Puppet modules, example: http://repohost.local/puppet_modules"
+                        echo "-m, --puppet_modules_baseurl      Base URL for downloading Puppet modules, example: http://repohost.local/puppet_modules"
                         exit 0
                         ;;
                 -m)
@@ -25,7 +25,7 @@ while test $# -gt 0; do
                         if test $# -gt 0; then
                                 puppet_modules_baseurl=$1
                         else
-                                echo "ERROR: --module_baseurl|-m NOT specified."
+                                echo "ERROR: --puppet_modules_baseurl|-m NOT specified."
                                 exit 1
                         fi
                         shift
@@ -65,7 +65,7 @@ echo "$(date) INFO: Installing [$puppet-agent] via YUM..." | tee -a  $log_file
 yum install -y $puppet_package
 export PATH="$PATH:/opt/puppetlabs/bin"
 
-echo "$(date) INFO: Downloading & installing Puppet modules from [$module_baseurl]" | tee -a  $log_file
+echo "$(date) INFO: Downloading & installing Puppet modules from [$puppet_modules_baseurl]" | tee -a  $log_file
 puppet resource file $tmp_puppet_modules ensure=directory
 IFS=$'\n'
 for module in $puppet_modules ; do
