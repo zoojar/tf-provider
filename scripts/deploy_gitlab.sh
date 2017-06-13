@@ -61,12 +61,10 @@ done
 
 echo "$(date) INFO: Deploying Gitlab via Puppet..." | tee -a  $log_file
 cat >$deploy_gitlab_pp <<'EOF'
-  Exec <| title == 'gitlab_setup' |> {
-    environment => ['GITLAB_ROOT_PASSWORD=88888888'],
-  }
   class { 'gitlab':
     external_url        => "http://${::hostname}.${domain}",
     manage_package_repo => false,
+    gitlab_rails => { 'initial_root_password' => 'CHANGEME' },
   }
   firewall { '080 acc tcp dport 80': proto  => 'tcp', dport  => 80, action => 'accept' } 
   firewall { '443 acc tcp dport 443': proto => 'tcp', dport  => 443, action => 'accept' }
