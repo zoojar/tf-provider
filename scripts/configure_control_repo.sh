@@ -7,7 +7,16 @@ configure_control_repo_pp='/tmp/configure_control_repo.pp'
 tmp_puppet_modules='/tmp/puppet_modules'
 read -d '' puppet_modules <<'EOF'
 puppet-r10k-6.0.0.tar.gz
+puppetlabs-stdlib-4.17.0.tar.gz
+puppetlabs-ruby-0.6.0.tar.gz
+puppetlabs-gcc-0.3.0.tar.gz
 abrader-gms-1.0.3.tar.gz
+puppet-make-1.1.0.tar.gz
+puppetlabs-inifile-1.6.0.tar.gz
+puppetlabs-vcsrepo-1.5.0.tar.gz 
+puppetlabs-git-0.5.0.tar.gz
+gentoo-portage-2.3.0.tar.gz
+puppetlabs-concat-2.2.1.tar.gz
 EOF
 
 while test $# -gt 0; do
