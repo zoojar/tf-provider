@@ -148,7 +148,7 @@ cat >$configure_control_repo_pp <<EOF
     path         => '/root/.ssh/id_dsa_r10k.pub',
     token        => '$api_token',
     project_name => 'puppet/control',
-    server_url   => '$git_server',
+    server_url   => 'http://$git_server',
     provider     => 'gitlab',
   }
   class {'r10k': remote => '$r10k_remote',}
