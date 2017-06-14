@@ -8,6 +8,7 @@ puppetlabs-firewall-1.8.2.tar.gz,
 palli-createrepo-2.1.0.tar.gz,
 puppetlabs-apache-1.11.0.tar.gz,
 puppetlabs-concat-2.2.1.tar.gz
+puppetlabs-ruby-0.6.0.tar.gz
 EOV
 tmp_dir='/tmp/install_repohost_tmp'
 mod_dir="${webroot}/puppet_modules"
@@ -29,6 +30,16 @@ echo $puppet_modules | sed -n 1'p' | tr ',' '\n' | while read module; do
 done
 echo "$(date) Preparing ${tmp_dir}/repohost.pp..." | tee -a  $log_file
 cat <<'EOF' > $tmp_dir/repohost.pp
+  class {'firewall':
+    ensure => stopped,
+  }
+  
+  firewall { '80 accept tcp dport 80':
+    proto  => 'tcp',
+    dport  => 80,
+    action => 'accept',
+  }
+
   file { ['/var/cache/repo','/var/www/html/repo']:
     ensure => directory,
   }
@@ -52,16 +63,21 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   }
 
   class { 'apache': }
+
+  class { '::ruby': }
+  class { '::ruby::dev': }
   
-  class {'firewall':
-    ensure => stopped,
+  exec { 'add_gem_source':
+    command => "gem sources --add http://localhost/gem_mirror:80",
+    path    => "/usr/bin",
   }
-  
-  firewall { '80 accept tcp dport 80':
-    proto  => 'tcp',
-    dport  => 80,
-    action => 'accept',
+
+  package { 'gem-mirror': 
+    ensure   => installed,
+    provider => gem,
+    require  => Exec['add_gem_source'],
   }
+
 EOF
 
 echo "$(date) Applying ${tmp_dir}/repohost.pp..." | tee -a  $log_file
