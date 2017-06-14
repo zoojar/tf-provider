@@ -74,29 +74,24 @@ cat <<'EOF' > $tmp_dir/repohost.pp
 
   class { 'apache': }
 
-  class { '::ruby': }
-  class { '::ruby::dev': require => Exec['add_gem_source'], }
-  
   $gem_source_fqdn = "${::fqdn}"
   $gem_source_port = '81'
   $gem_source_url  = "http://${gem_source_fqdn}:${gem_source_port}"
-  
+
   apache::vhost { $gem_source_fqdn:
     port    => $gem_source_port,
     docroot => '/var/www/html/gem_mirror/public',
   }
 
-  exec { 'add_gem_source':
-    command => "gem sources --add ${gem_source_url}",
-    path    => "/usr/bin",
-    require  => Apache::Vhost[$gem_source_fqdn],
-  }
+  class { '::ruby': }
+  class { '::ruby::gemrc': sources => ["${gem_source_url}"], }
+  class { '::ruby::dev': require => Class['::ruby::gemrc'], }
 
   package { 'gem-mirror': 
     ensure   => installed,
     provider => gem,
-    source   => $gem_source_url,
     require  => Apache::Vhost[$gem_source_fqdn],
+    source   => $gem_source_url,
   }
 
 EOF
