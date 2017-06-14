@@ -84,7 +84,10 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   }
 
   class { '::ruby': }
-  class { '::ruby::gemrc': sources => ["${gem_source_url}"], }
+  class { '::ruby::gemrc': 
+    sources => ["${gem_source_url}"],
+    require => Apache::Vhost[$gem_source_fqdn], 
+  }
   class { '::ruby::dev': require => Class['::ruby::gemrc'], }
 
   package { 'gem-mirror': 
