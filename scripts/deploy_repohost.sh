@@ -75,7 +75,7 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   class { 'apache': }
 
   class { '::ruby': }
-  class { '::ruby::dev': }
+  class { '::ruby::dev': require => Exec['add_gem_source'], }
   
   $gem_source_fqdn = "${::fqdn}"
   $gem_source_port = '81'
