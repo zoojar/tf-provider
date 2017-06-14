@@ -40,6 +40,12 @@ cat <<'EOF' > $tmp_dir/repohost.pp
     action => 'accept',
   }
 
+  firewall { '81 accept tcp dport 81':
+    proto  => 'tcp',
+    dport  => 81,
+    action => 'accept',
+  }
+
   file { ['/var/cache/repo','/var/www/html/repo']:
     ensure => directory,
   }
@@ -71,14 +77,15 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   class { '::ruby': }
   class { '::ruby::dev': }
   
-  $gem_source_fqdn = "rubygems.${::fqdn}"
+  $gem_source_fqdn = "${::fqdn}"
+  $gem_source_port = '81'
   apache::vhost { $gem_source_fqdn:
-    port    => '80',
+    port    => $gem_source_port
     docroot => '/var/www/html/gem_mirror/public',
   }
 
   exec { 'add_gem_source':
-    command => "gem sources --add http://${gem_source_fqdn}:80",
+    command => "gem sources --add http://${gem_source_fqdn}:${gem_source_port}",
     path    => "/usr/bin",
     require => Apache::Vhost[$gem_source_fqdn],
   }
