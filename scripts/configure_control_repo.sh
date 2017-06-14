@@ -166,17 +166,18 @@ cat >$configure_control_repo_pp <<EOF
     server_url   => 'http://$git_server',
     provider     => 'gitlab',
   }
+  
+  class { '::ruby': }
+  class { '::ruby::gemrc': 
+    sources => ['$gem_source_url'],
+  }
+  class { '::ruby::dev': require => Class['::ruby::gemrc'], }
 
   class {'r10k': 
     remote  => '$r10k_remote',
     require => Class['::ruby::gemrc'],
   }
 
-  class { '::ruby': }
-  class { '::ruby::gemrc': 
-    sources => ['$gem_source_url'],
-  }
-  class { '::ruby::dev': require => Class['::ruby::gemrc'], }
 EOF
 
 puppet apply $configure_control_repo_pp -v
