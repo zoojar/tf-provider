@@ -24,6 +24,7 @@ while test $# -gt 0; do
                 -h|--help)
                         echo "options:"
                         echo "-h, --help                         Show help."
+                        echo "-g, --gem_source_url=URL           Gem source url to configure in gemrc sources for installation of new gems."
                         echo "-m, --puppet_modules_baseurl       Base URL for downloading Puppet modules, example: http://repohost.local/puppet_modules"                     
                         echo "-s, --git_server=FQDN              Git server FQDN."
                         echo "-u, --git_user=USER                Git api user."
@@ -31,6 +32,20 @@ while test $# -gt 0; do
                         echo "-r, --r10k_remote=GIT_REMOTE       Git remote, eg: git@gitlab.local:root/control-repo.git."
                         exit 0
                         ;;
+                -g)
+                        shift
+                        if test $# -gt 0; then
+                                gem_source_url=$1
+                        else
+                                echo "ERROR: --gem_source_url|-g NOT specified."
+                                exit 1
+                        fi
+                        shift
+                        ;;
+                --gem_source_url*)
+                        gem_source_url=`echo $1 | sed -e 's/^[^=]*=//g'`
+                        shift
+                        ;;     
                 -m)
                         shift
                         if test $# -gt 0; then
@@ -147,11 +162,21 @@ cat >$configure_control_repo_pp <<EOF
     name         => \$::fqdn,
     path         => '/root/.ssh/id_dsa_r10k.pub',
     token        => '$api_token',
-    project_name => 'puppet/control',
+    project_name => 'root/control-repo',
     server_url   => 'http://$git_server',
     provider     => 'gitlab',
   }
-  class {'r10k': remote => '$r10k_remote',}
+  
+  class {'r10k': 
+    remote  => '$r10k_remote',
+    require => Class['::ruby::gemrc'],
+  }
+
+  class { '::ruby': }
+  class { '::ruby::gemrc': 
+    sources => ["${gem_source_url}"],
+  }
+  class { '::ruby::dev': require => Class['::ruby::gemrc'], }
 EOF
 
 puppet apply $configure_control_repo_pp -v
