@@ -25,7 +25,7 @@ echo "$(date) Installing puppet agent..." | tee -a  $log_file
 yum -y install puppet
 
 echo "$(date) Installing puppet modules from ${mod_dir}..." | tee -a  $log_file
-echo $puppet_modules | sed -n 1'p' | tr ',' '\n' | while read module; do
+for module in $puppet_modules ; do
     $puppet_bin module install $mod_dir/$module --ignore-dependencies --force
 done
 echo "$(date) Preparing ${tmp_dir}/repohost.pp..." | tee -a  $log_file
