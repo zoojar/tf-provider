@@ -166,10 +166,10 @@ cat >$configure_control_repo_pp <<EOF
     server_url   => 'http://$git_server',
     provider     => 'gitlab',
   }
-  
+
   class {'r10k': 
-    remote  => '$r10k_remote',
-    require => Class['::ruby::gemrc'],
+    remote          => '$r10k_remote',
+    install_options => '--source $gem_source_url',
   }
 
   class { '::ruby': }
