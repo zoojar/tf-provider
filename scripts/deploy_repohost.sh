@@ -62,6 +62,10 @@ cat <<'EOF' > $tmp_dir/repohost.pp
     path      => '/usr/sbin/',
   }
 
+  ### TODO: Setup a CRON for the above to;
+  ### - update new rpms in /var/www/html/repo/yumrepos/packages via 'createrepo . --update'
+  ### - update new gems in /var/www/html/gem_mirror/public/gems via 'gem-mirror index'
+
   class { 'apache': }
 
   class { '::ruby': }
