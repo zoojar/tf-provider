@@ -74,6 +74,7 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   exec { 'add_gem_source':
     command => "gem sources --add http://localhost:80",
     path    => "/usr/bin",
+    require => Class['apache'],
   }
 
   package { 'gem-mirror': 
