@@ -2,14 +2,14 @@
 #Bootstrap repohost on CentOS 7
 log_file='/var/log/bootstrap_repohost.log'
 webroot='/var/www/html'
-read -r -d '' puppet_modules << EOV
-puppetlabs-stdlib-4.17.0.tar.gz,
-puppetlabs-firewall-1.8.2.tar.gz,
-palli-createrepo-2.1.0.tar.gz,
-puppetlabs-apache-1.11.0.tar.gz,
+read -r -d '' puppet_modules <<'EOF'
+puppetlabs-stdlib-4.17.0.tar.gz
+puppetlabs-firewall-1.8.2.tar.gz
+palli-createrepo-2.1.0.tar.gz
+puppetlabs-apache-1.11.0.tar.gz
 puppetlabs-concat-2.2.1.tar.gz
 puppetlabs-ruby-0.6.0.tar.gz
-EOV
+EOF
 tmp_dir='/tmp/install_repohost_tmp'
 mod_dir="${webroot}/puppet_modules"
 puppet_bin='/opt/puppetlabs/bin/puppet'
