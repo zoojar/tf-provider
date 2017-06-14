@@ -80,7 +80,7 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   exec { 'add_gem_source':
     command => "gem sources --add http://${gem_source_fqdn}:80",
     path    => "/usr/bin",
-    require => Apache::vhost[$gem_source_fqdn],
+    require => Apache::Vhost[$gem_source_fqdn],
   }
 
   package { 'gem-mirror': 
