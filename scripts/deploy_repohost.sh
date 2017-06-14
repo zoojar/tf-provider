@@ -79,21 +79,24 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   
   $gem_source_fqdn = "${::fqdn}"
   $gem_source_port = '81'
+  $gem_source_url  = "http://${gem_source_fqdn}:${gem_source_port}"
+  
   apache::vhost { $gem_source_fqdn:
     port    => $gem_source_port,
     docroot => '/var/www/html/gem_mirror/public',
   }
 
   exec { 'add_gem_source':
-    command => "gem sources --add http://${gem_source_fqdn}:${gem_source_port}",
+    command => "gem sources --add ${gem_source_url}",
     path    => "/usr/bin",
-    require => Apache::Vhost[$gem_source_fqdn],
+    require  => Apache::Vhost[$gem_source_fqdn],
   }
 
   package { 'gem-mirror': 
     ensure   => installed,
     provider => gem,
-    require  => Exec['add_gem_source'],
+    source   => $gem_source_url,
+    require  => Apache::Vhost[$gem_source_fqdn],
   }
 
 EOF
