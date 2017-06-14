@@ -169,7 +169,7 @@ cat >$configure_control_repo_pp <<EOF
 
   class {'r10k': 
     remote          => '$r10k_remote',
-    install_options => '--source $gem_source_url',
+    install_options => ['--source $gem_source_url'],
   }
 
   class { '::ruby': }
