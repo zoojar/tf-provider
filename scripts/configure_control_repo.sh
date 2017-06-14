@@ -168,13 +168,13 @@ cat >$configure_control_repo_pp <<EOF
   }
 
   class {'r10k': 
-    remote          => '$r10k_remote',
-    install_options => ['--source $gem_source_url'],
+    remote  => '$r10k_remote',
+    require => Class['::ruby::gemrc'],
   }
 
   class { '::ruby': }
   class { '::ruby::gemrc': 
-    sources => ["${gem_source_url}"],
+    sources => ['$gem_source_url'],
   }
   class { '::ruby::dev': require => Class['::ruby::gemrc'], }
 EOF
