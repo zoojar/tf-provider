@@ -72,7 +72,7 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   class { '::ruby::dev': }
   
   $gem_source_fqdn = "rubygems.${::fqdn}"
-  apache::vhost { $gem_source_url:
+  apache::vhost { $gem_source_fqdn:
     port    => '80',
     docroot => '/var/www/html/gem_mirror/public',
   }
