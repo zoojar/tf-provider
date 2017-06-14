@@ -64,7 +64,7 @@ cat <<'EOF' > $tmp_dir/repohost.pp
 
   ### TODO: Setup a CRON for the above to;
   ### - update new rpms in /var/www/html/repo/yumrepos/packages via 'createrepo . --update'
-  ### - update new gems in /var/www/html/gem_mirror/public/gems via 'gem-mirror index'
+  ### - update new gems in /var/www/html/public/gems via 'gem-mirror index'
 
   class { 'apache': }
 
@@ -72,7 +72,7 @@ cat <<'EOF' > $tmp_dir/repohost.pp
   class { '::ruby::dev': }
   
   exec { 'add_gem_source':
-    command => "gem sources --add http://localhost/gem_mirror:80",
+    command => "gem sources --add http://localhost:80",
     path    => "/usr/bin",
   }
 
