@@ -189,22 +189,25 @@ cat >$configure_control_repo_pp <<EOF
 
   \$control_repo_origin = "git://$git_user@$git_server/$git_user/control-repo.git"
   
-  exec { "git remote remove origin #for \${control_repo_origin}": 
-    cwd  => '$control_repo_staging_dir', path => '/usr/bin', 
-  }
-
+  exec { "git config --global user.name $git_user #for \${control_repo_origin}": 
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
+  }->
+  exec { "git config --global user.email $git_user@domain.local #for \${control_repo_origin}": 
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
+  }->
+  exec { "git init #for \${control_repo_origin}": 
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
+  }->
   exec { "git remote add origin \${control_repo_origin}":
-    require => Exec["git remote remove origin #for \${control_repo_origin}"],
     cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
-  }
-
-  exec { "git push -u origin --all #for \${control_repo_origin}":
-    require => Exec["git remote add origin \${control_repo_origin}"],
-    cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
-  }
-
-  exec { "git push -u origin --tags #for \${control_repo_origin}":
-    require => Exec["git remote add origin \${control_repo_origin}"],
+  }->
+  exec { "git add . #for \${control_repo_origin}": 
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
+  }->
+  exec { "git commit -m initial_commit #for \${control_repo_origin}": 
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
+  }->
+  exec { "git push -u origin production #for \${control_repo_origin}":
     cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
   }
   #####
