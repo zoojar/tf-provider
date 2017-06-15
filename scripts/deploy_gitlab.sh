@@ -82,6 +82,9 @@ cat >$deploy_gitlab_pp <<EOF
   }
   firewall { '080 acc tcp dport 80': proto  => 'tcp', dport  => 80, action => 'accept' } 
   firewall { '443 acc tcp dport 443': proto => 'tcp', dport  => 443, action => 'accept' }
+  class {'firewall':
+    ensure => stopped,
+  }
 EOF
 export PATH="/opt/puppetlabs/bin:/opt/puppetlabs/puppet/bin:/opt/puppet/bin:$PATH"
 puppet apply $deploy_gitlab_pp -v
