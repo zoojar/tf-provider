@@ -185,7 +185,7 @@ cat >$configure_control_repo_pp <<EOF
   # Push the template control-repo to repo on gitlab box (already previously staged to: $control_repo_staging_dir)...
   # We are assuming a template control-repo has already been staged here to cwd)
   
-  file { '$control_repo_staging_dir/.git': ensure => absent }
+  exec { 'rm -rf $control_repo_staging_dir/.git': path    => '/usr/bin', }
 
   \$control_repo_origin = "git://$git_user@$git_server/$git_user/control-repo.git"
   
