@@ -166,7 +166,7 @@ cat >$configure_control_repo_pp <<EOF
     server_url   => 'http://$git_server',
     provider     => 'gitlab',
   }
-  
+
   class { '::ruby': }
   class { '::ruby::gemrc': 
     sources => ['$gem_source_url'],
@@ -174,8 +174,13 @@ cat >$configure_control_repo_pp <<EOF
   class { '::ruby::dev': require => Class['::ruby::gemrc'], }
 
   class {'r10k': 
-    remote  => '$r10k_remote',
-    require => Class['::ruby::gemrc'],
+    remote                 => '$r10k_remote',
+    manage_ruby_dependency => 'ignore',
+    install_options        => [
+      '--clear-sources' , 
+      {'--source' => '$gem_source_url'},
+    ],
+    require                => Class['::ruby::gemrc'],
   }
 
 EOF
