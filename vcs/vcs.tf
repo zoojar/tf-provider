@@ -17,6 +17,7 @@ variable "hostname"           {}
 
 variable "yumrepo_baseurl"        {}
 variable "puppet_modules_baseurl" {}
+variable "initial_root_password"  {}
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
