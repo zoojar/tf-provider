@@ -186,21 +186,25 @@ cat >$configure_control_repo_pp <<EOF
 
   \$control_repo_origin = "git://$git_user@$git_server/$git_user/control-repo.git"
   
-  exec { "git init #for \${control_repo_origin}": 
-    cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
-  }->
-  exec { "git remote add origin \${control_repo_origin}":
-    cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
+  vcsrepo {'$control_repo_staging_dir':
+    ensure   => present,
+    provider => git,
+    user     => '$git_user',
+    identity => '/root/.ssh/id_dsa_r10k',
   }->
   exec { "git add . #for \${control_repo_origin}": 
     cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
   }->
   exec { "git commit -m initial_commit #for \${control_repo_origin}": 
     cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
+  }
+  exec { "git remote add origin \${control_repo_origin}":
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
   }->
   exec { "git push -u origin production #for \${control_repo_origin}":
     cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
   }
+
   #####
 
   # Fix for puppet gem source defaulting to rubygems.org
