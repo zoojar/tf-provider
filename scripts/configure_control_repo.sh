@@ -166,6 +166,14 @@ cat >$configure_control_repo_pp <<EOF
     server_url   => 'http://$git_server',
     provider     => 'gitlab',
   }
+  
+  # Fix for puppet gem source defaulting to rubygems.org
+  exec { 'gem sources --remove https://rubygems.org':
+    path    => '/opt/puppetlabs/puppet/bin',
+  } 
+  exec { 'gem sources --add $gem_source_url':
+    path    => '/opt/puppetlabs/puppet/bin',
+  } 
 
   class { '::ruby': }
   class { '::ruby::gemrc': 
@@ -176,13 +184,11 @@ cat >$configure_control_repo_pp <<EOF
   class {'r10k': 
     remote                 => '$r10k_remote',
     manage_ruby_dependency => 'ignore',
-    install_options        => [
-      '--clear-sources' , 
-      {'--source' => '$gem_source_url'},
-    ],
-    require                => Class['::ruby::gemrc'],
+    require                => [
+      Class['::ruby'],
+      Exec['gem sources --add $gem_source_url'],
+    ]
   }
-
 EOF
 
 puppet apply $configure_control_repo_pp -v
