@@ -186,12 +186,6 @@ cat >$configure_control_repo_pp <<EOF
 
   \$control_repo_origin = "git://$git_user@$git_server/$git_user/control-repo.git"
   
-  exec { "git config --global user.name $git_user #for \${control_repo_origin}": 
-    cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
-  }->
-  exec { "git config --global user.email $git_user@domain.local #for \${control_repo_origin}": 
-    cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
-  }->
   exec { "git init #for \${control_repo_origin}": 
     cwd     => '$control_repo_staging_dir', path    => '/usr/bin', 
   }->
