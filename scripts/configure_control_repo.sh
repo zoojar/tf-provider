@@ -1,5 +1,12 @@
 #!/bin/bash
 # Deploy script for control_repo_setup on Puppetserver
+# Creates a new project: control-repo on the remote gitlab server: $git_server, 
+## using credentials: $git_user & $git_password
+# Pushes a template control-repo repository to the project: control-repo
+## - Assumes that /tmp/control-repo-staging exists (used as a template control repo).
+# Re-configures all gem sources (inc Puppet server) to point to a local gem repository
+## (The default source: https://rubygems.org is removed)
+# Configures r10k to point to the newly created control-repo on the gitlab server: $git_server
 
 #Defaults:
 log_file='/tmp/configure_control_repo.log'
@@ -143,6 +150,9 @@ echo "$(date) INFO: Generating SSH key for r10k..." | tee -a $log_file
 yes y | ssh-keygen -t dsa -C "r10k" -f /root/.ssh/id_dsa_r10k -q -N ''
 r10k_public_key=$(cat /root/.ssh/id_dsa_r10k.pub) #=r10k_public_key
 
+echo "$(date) INFO: Adding ssh key for r10k & root on Gitlab server [$git_server] for Git user [$git_user]..."
+curl -H "Content-Type:application/json" http://$git_server/api/v3/user/keys?private_token=$api_token -d "{ \"title\": \"r10k\", \"key\": \"$r10k_public_key\" }"
+
 echo "$(date) INFO: Downloading & installing Puppet modules from [$puppet_modules_baseurl]" | tee -a  $log_file
 puppet resource file $tmp_puppet_modules ensure=directory
 IFS=$'\n'
@@ -175,6 +185,8 @@ cat >$configure_control_repo_pp <<EOF
   # Push the template control-repo to repo on gitlab box (already previously staged to: $control_repo_staging_dir)...
   # We are assuming a template control-repo has already been staged here to cwd)
   
+  file { '$control_repo_staging_dir/.git': ensure => absent }
+
   \$control_repo_origin = "git://$git_user@$git_server/$git_user/control-repo.git"
   
   exec { "git remote remove origin #for \${control_repo_origin}": 
