@@ -171,21 +171,32 @@ cat >$configure_control_repo_pp <<EOF
     provider     => 'gitlab',
   }
 
+  #####
   # Push the template control-repo to repo on gitlab box (already previously staged to: $control_repo_staging_dir)...
+  # We are assuming a template control-repo has already been staged here to cwd)
+  
   \$control_repo_origin = "git://$git_user@$git_server/$git_user/control-repo.git"
+  
+  exec { "git remote remove origin #for \${control_repo_origin}": 
+    cwd  => '$control_repo_staging_dir', path => '/usr/bin', 
+  }
+
   exec { "git remote add origin \${control_repo_origin}":
-    # We are assuming a template control-repo has already been staged here to cwd...
-    cwd  => '$control_repo_staging_dir',
-    path => '/usr/bin',
+    require => Exec["git remote remove origin #for \${control_repo_origin}"],
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
   }
-  \$git_push_cmds = ['git push -u origin -all','git push -u origin --tags']
-  exec { \$git_push_cmds:
-    # We are assuming a template control-repo has already been staged here to cwd...
-    cwd     => '$control_repo_staging_dir',
-    path    => '/usr/bin',
+
+  exec { "git push -u origin --all #for \${control_repo_origin}":
     require => Exec["git remote add origin \${control_repo_origin}"],
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
   }
- 
+
+  exec { "git push -u origin --tags #for \${control_repo_origin}":
+    require => Exec["git remote add origin \${control_repo_origin}"],
+    cwd     => '$control_repo_staging_dir', path    => '/usr/bin',
+  }
+  #####
+
   # Fix for puppet gem source defaulting to rubygems.org
   exec { 'gem sources --remove https://rubygems.org':
     path    => '/opt/puppetlabs/puppet/bin',
