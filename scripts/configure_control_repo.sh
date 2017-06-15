@@ -5,6 +5,8 @@
 log_file='/tmp/configure_control_repo.log'
 configure_control_repo_pp='/tmp/configure_control_repo.pp'
 tmp_puppet_modules='/tmp/puppet_modules'
+control_repo_staging_dir='/tmp/control-repo-staging' #TODO: Expose & parametarize ?
+
 read -d '' puppet_modules <<'EOF'
 puppet-r10k-6.0.0.tar.gz
 puppetlabs-stdlib-4.17.0.tar.gz
@@ -150,6 +152,8 @@ for module in $puppet_modules ; do
 done
 
 echo "$(date) INFO: Configuring control-repo & R10k via Gitlab API..." | tee -a $log_file
+git_user=root #TODO: Expose & parametarize 
+
 cat >$configure_control_repo_pp <<EOF
   sshkey { '$git_server':
     ensure => present,
@@ -166,7 +170,22 @@ cat >$configure_control_repo_pp <<EOF
     server_url   => 'http://$git_server',
     provider     => 'gitlab',
   }
-  
+
+  # Push the template control-repo to repo on gitlab box (already previously staged to: $control_repo_staging_dir)...
+  \$control_repo_origin = "git://$git_user@$git_server/$git_user/control-repo.git"
+  exec { "git remote add origin \${control_repo_origin}":
+    # We are assuming a template control-repo has already been staged here to cwd...
+    cwd  => '$control_repo_staging_dir',
+    path => '/usr/bin',
+  }
+  \$git_push_cmds = ['git push -u origin -all','git push -u origin --tags']
+  exec { \$git_push_cmds:
+    # We are assuming a template control-repo has already been staged here to cwd...
+    cwd     => '$control_repo_staging_dir',
+    path    => '/usr/bin',
+    require => Exec["git remote add origin \${control_repo_origin}"],
+  }
+ 
   # Fix for puppet gem source defaulting to rubygems.org
   exec { 'gem sources --remove https://rubygems.org':
     path    => '/opt/puppetlabs/puppet/bin',

@@ -71,6 +71,11 @@ resource "vsphere_virtual_machine" "puppetserver" {
     destination = "/tmp"
   }
   
+  provisioner "file" {
+    source      = "../control-repo-staging"
+    destination = "/tmp"
+  }
+
   provisioner "remote-exec" {
     inline = [
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
