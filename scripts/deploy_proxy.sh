@@ -11,6 +11,8 @@ puppetlabs-stdlib-4.17.0.tar.gz
 puppetlabs-haproxy-1.5.0.tar.gz
 puppetlabs-concat-2.2.1.tar.gz
 puppetlabs-firewall-1.8.2.tar.gz
+herculesteam-augeasproviders_core-2.1.3.tar.gz
+herculesteam-augeasproviders_sysctl-2.2.0.tar.gz
 EOF
 
 while test $# -gt 0; do
@@ -107,7 +109,12 @@ done
 
 echo "$(date) INFO: Deploying HAProxy via Puppet..." | tee -a  $log_file
 cat >$deploy_proxy_pp <<EOF
-  include ::haproxy
+  sysctl { 'net.ipv4.ip_nonlocal_bind': 
+      value => '1' ,
+  }
+  class { 'haproxy': 
+    require => Sysctl['net.ipv4.ip_nonlocal_bind'],
+  }
   haproxy::listen { 'puppetserver':
     collect_exported => false,
     ipaddress        => \$::ipaddress,
