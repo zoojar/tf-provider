@@ -6,6 +6,7 @@ log_file='/tmp/deploy_proxy.log'
 puppet_package='puppet-agent'
 deploy_proxy_pp='/tmp/deploy_proxy.pp'
 tmp_puppet_modules='/tmp/puppet_modules'
+stats_port='8101'
 read -d '' puppet_modules <<'EOF'
 puppetlabs-stdlib-4.17.0.tar.gz
 puppetlabs-haproxy-1.5.0.tar.gz
@@ -109,11 +110,10 @@ done
 
 echo "$(date) INFO: Deploying HAProxy via Puppet..." | tee -a  $log_file
 cat >$deploy_proxy_pp <<EOF
-  sysctl { 'net.ipv4.ip_nonlocal_bind': 
-      value => '1' ,
-  }
+  sysctl { 'net.ipv4.ip_nonlocal_bind':    value => '1', }
+  sysctl { 'net.ipv4.ip_local_port_range': value => '1024 65023', }
   class { 'haproxy': 
-    require => Sysctl['net.ipv4.ip_nonlocal_bind'],
+    require => Sysctl['net.ipv4.ip_nonlocal_bind','net.ipv4.ip_local_port_range'],
   }
   haproxy::listen { 'puppetserver':
     collect_exported => false,
@@ -127,7 +127,21 @@ cat >$deploy_proxy_pp <<EOF
     ports             => '$puppetserver_port',
     options           => 'check',
   }
+  haproxy::listen { 'stats':
+    mode      => 'http',
+    ports     => '$stats_port',
+    ipaddress => \$::ipaddress,
+    options   => {
+      'stats' => [
+        'enable',
+        'hide-version',
+        'realm HAProxy\ Statistics',
+        'uri /stats',
+      ]
+    },
+  }
   firewall { '814 acc tcp dport $puppetserver_port': proto  => 'tcp', dport  => $puppetserver_port, action => 'accept' } 
+  firewall { '815 acc tcp dport $stats_port': proto  => 'tcp', dport  => $stats_port, action => 'accept' } 
   class {'firewall':
     ensure => stopped,
   }
