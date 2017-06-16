@@ -9,6 +9,7 @@ tmp_puppet_modules='/tmp/puppet_modules'
 read -d '' puppet_modules <<'EOF'
 puppetlabs-stdlib-4.17.0.tar.gz
 puppetlabs-haproxy-1.5.0.tar.gz
+puppetlabs-concat-2.2.1.tar.gz
 puppetlabs-firewall-1.8.2.tar.gz
 EOF
 
