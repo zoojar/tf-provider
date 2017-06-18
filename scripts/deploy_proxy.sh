@@ -114,6 +114,7 @@ cat >$deploy_proxy_pp <<EOF
   sysctl { 'net.ipv4.ip_nonlocal_bind':    value => '1', }
   sysctl { 'net.ipv4.ip_local_port_range': value => '1024 65023', }
   selinux::boolean { 'httpd_can_network_connect': }
+  selinux::boolean { 'haproxy_connect_any': }
 
   class { 'haproxy': 
     require => Sysctl['net.ipv4.ip_nonlocal_bind','net.ipv4.ip_local_port_range'],
