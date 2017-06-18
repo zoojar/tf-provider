@@ -67,11 +67,6 @@ resource "vsphere_virtual_machine" "puppetserver" {
   ###
 
   provisioner "file" {
-    source      = "id_dsa_r10k"
-    destination = "/home/root/.ssh/id_dsa_r10k"
-  }
-
-  provisioner "file" {
     source      = "scripts"
     destination = "/tmp"
   }
