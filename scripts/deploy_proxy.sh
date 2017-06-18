@@ -14,6 +14,7 @@ puppetlabs-concat-2.2.1.tar.gz
 puppetlabs-firewall-1.8.2.tar.gz
 herculesteam-augeasproviders_core-2.1.3.tar.gz
 herculesteam-augeasproviders_sysctl-2.2.0.tar.gz
+puppet-selinux-1.1.0.tar.gz
 EOF
 
 while test $# -gt 0; do
@@ -112,6 +113,8 @@ echo "$(date) INFO: Deploying HAProxy via Puppet..." | tee -a  $log_file
 cat >$deploy_proxy_pp <<EOF
   sysctl { 'net.ipv4.ip_nonlocal_bind':    value => '1', }
   sysctl { 'net.ipv4.ip_local_port_range': value => '1024 65023', }
+  selinux::boolean { 'httpd_can_network_connect': }
+
   class { 'haproxy': 
     require => Sysctl['net.ipv4.ip_nonlocal_bind','net.ipv4.ip_local_port_range'],
   }
