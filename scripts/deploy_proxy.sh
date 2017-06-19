@@ -23,40 +23,9 @@ while test $# -gt 0; do
                         echo "options:"
                         echo "-h, --help                        Show help."
                         echo "-m, --puppet_modules_baseurl      Base URL for downloading Puppet modules, example: http://repohost.local/puppet_modules"
-                        echo "-f, --puppetserver_fqdn           Puppetserver FQDN (balancermember)"
-                        echo "-i, --puppetserver_ip             Puppetserver ip (balancermember)"
-                        echo "-p, --puppetserver_port           Puppetserver port (balancermember)"
-                        echo "-r, --repohost_ip_fqdn_port       Repohost ip, fqdn & port. Split by underscore; eg, 10.38.1.71_repohost.local_80"
+                        echo "-p, --proxy_members_pp            HAProxy Memnber Puppet Config"
                         exit 0
                         ;;
-                -f)
-                        shift
-                        if test $# -gt 0; then
-                                puppetserver_fqdn=$1
-                        else
-                                echo "ERROR: --puppetserver_fqdn|-f NOT specified."
-                                exit 1
-                        fi
-                        shift
-                        ;;
-                --puppetserver_fqdn*)
-                        puppetserver_fqdn=`echo $1 | sed -e 's/^[^=]*=//g'`
-                        shift
-                        ;;  
-                -i)
-                        shift
-                        if test $# -gt 0; then
-                                puppetserver_ip=$1
-                        else
-                                echo "ERROR: --puppetserver_ip|-i NOT specified."
-                                exit 1
-                        fi
-                        shift
-                        ;;
-                --puppetserver_ip*)
-                        puppetserver_ip=`echo $1 | sed -e 's/^[^=]*=//g'`
-                        shift
-                        ;;  
                 -m)
                         shift
                         if test $# -gt 0; then
@@ -74,29 +43,15 @@ while test $# -gt 0; do
                 -p)
                         shift
                         if test $# -gt 0; then
-                                puppetserver_port=$1
+                                proxy_members_pp=$1
                         else
-                                echo "ERROR: --puppetserver_port|-p NOT specified."
+                                echo "ERROR: --proxy_members_pp|-p NOT specified."
                                 exit 1
                         fi
                         shift
                         ;;
-                --puppetserver_port*)
-                        puppetserver_port=`echo $1 | sed -e 's/^[^=]*=//g'`
-                        shift
-                        ;;  
-                -r)
-                        shift
-                        if test $# -gt 0; then
-                                repohost_ip_fqdn_port=$1
-                        else
-                                echo "ERROR: --puppetserver_port|-p NOT specified."
-                                exit 1
-                        fi
-                        shift
-                        ;;
-                --repohost_ip_fqdn_port*)
-                        repohost_ip_fqdn_port=`echo $1 | sed -e 's/^[^=]*=//g'`
+                --proxy_members_pp*)
+                        proxy_members_pp=`echo $1 | sed -e 's/^[^=]*=//g'`
                         shift
                         ;;  
                 *)
@@ -124,10 +79,6 @@ for module in $puppet_modules ; do
   puppet module install $tmp_puppet_modules/$module --ignore-dependencies
 done
 
-IFS='_' read -r -a repohost_ip_fqdn_port_array <<< $repohost_ip_fqdn_port
-reposerver_ip="${repohost_ip_fqdn_port_array[0]}"
-reposerver_fqdn="${repohost_ip_fqdn_port_array[1]}"
-reposerver_port="${repohost_ip_fqdn_port_array[2]}"
 
 echo "$(date) INFO: Deploying HAProxy via Puppet..." | tee -a  $log_file
 cat >$deploy_proxy_pp <<EOF
@@ -140,32 +91,29 @@ cat >$deploy_proxy_pp <<EOF
     require => Sysctl['net.ipv4.ip_nonlocal_bind','net.ipv4.ip_local_port_range'],
   }
 
-  haproxy::listen { 'puppetserver':
-    collect_exported => false,
-    ipaddress        => \$::ipaddress,
-    ports            => '$puppetserver_port',
+  define member (
+    String \$service = \$title,
+    String \$ip,
+    String \$fqdn = \$title,
+    Integer \$port,
+    String \$mode = 'tcp',    
+  ){
+    haproxy::listen { "\${service}":
+      collect_exported => false,
+      ipaddress        => \$::ipaddress,
+      ports            => \$port,
+    }
+    haproxy::balancermember { "\${service}_01":
+      listening_service => \$service,
+      mode              => \$mode,
+      server_names      => \$fqdn,
+      ipaddresses       => \$ip,
+      ports             => \$port,
+      options           => 'check',
+    }
   }
-  haproxy::balancermember { 'puppetserver01':
-    listening_service => 'puppetserver',
-    server_names      => '$puppetserver_fqdn',
-    ipaddresses       => '$puppetserver_ip',
-    ports             => '$puppetserver_port',
-    options           => 'check',
-  }
-
-  haproxy::listen { 'reposerver':
-    collect_exported => false,
-    mode             => http,
-    ipaddress        => \$::ipaddress,
-    ports            => '$reposerver_port',
-  }
-  haproxy::balancermember { 'reposerver01':
-    listening_service => 'reposerver',
-    server_names      => '$reposerver_fqdn',
-    ipaddresses       => '$reposerver_ip',
-    ports             => '$reposerver_port',
-    options           => 'check',
-  }
+  
+  $proxy_members_pp
 
   haproxy::listen { 'stats':
     mode      => 'http',
@@ -180,9 +128,7 @@ cat >$deploy_proxy_pp <<EOF
       ]
     },
   }
-  firewall { '814 acc tcp dport $puppetserver_port': proto  => 'tcp', dport  => $puppetserver_port, action => 'accept' } 
-  firewall { '880 acc tcp dport $reposerver_port': proto  => 'tcp', dport  => $reposerver_port, action => 'accept' } 
-  firewall { '815 acc tcp dport $stats_port': proto  => 'tcp', dport  => $stats_port, action => 'accept' } 
+  
   class {'firewall':
     ensure => stopped,
   }
