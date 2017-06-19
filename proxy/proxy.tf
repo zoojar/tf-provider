@@ -17,7 +17,6 @@ variable "hostname"           {}
 
 variable "yumrepo_baseurl"        {}
 variable "puppet_modules_baseurl" {}
-variable "proxy_members_pp"       {}
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {

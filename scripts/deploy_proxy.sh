@@ -40,20 +40,6 @@ while test $# -gt 0; do
                         puppet_modules_baseurl=`echo $1 | sed -e 's/^[^=]*=//g'`
                         shift
                         ;;  
-                -p)
-                        shift
-                        if test $# -gt 0; then
-                                proxy_members_pp=$1
-                        else
-                                echo "ERROR: --proxy_members_pp|-p NOT specified."
-                                exit 1
-                        fi
-                        shift
-                        ;;
-                --proxy_members_pp*)
-                        proxy_members_pp=`echo $1 | sed -e 's/^[^=]*=//g'`
-                        shift
-                        ;;  
                 *)
                         break
                         ;;
@@ -113,7 +99,9 @@ cat >$deploy_proxy_pp <<EOF
     }
   }
   
-  $proxy_members_pp
+  member { 'puppetserver.vsphere.local':  ip => '192.168.0.160', port => '8140', mode => 'tcp', }
+  member { 'repohost.vsphere.local':  ip => '192.168.0.162', port => '80', mode => 'http', }
+  member { 'gemhost.vsphere.local':  ip => '192.168.0.162', fqdn => 'repohost.vsphere.local', port => '81', mode => 'http', }
 
   haproxy::listen { 'stats':
     mode      => 'http',
