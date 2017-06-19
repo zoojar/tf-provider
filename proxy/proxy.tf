@@ -68,7 +68,7 @@ resource "vsphere_virtual_machine" "proxy" {
   provisioner "remote-exec" {
     inline = [
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
-      ". /tmp/scripts/deploy_proxy.sh --puppet_modules_baseurl=${var.puppet_modules_baseurl} --proxy_members_pp=${var.proxy_members_pp}",
+      ". /tmp/scripts/deploy_proxy.sh --puppet_modules_baseurl=${var.puppet_modules_baseurl}",
     ]
   }
 
