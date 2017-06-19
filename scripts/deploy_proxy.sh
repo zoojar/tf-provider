@@ -82,16 +82,16 @@ cat >$deploy_proxy_pp <<EOF
     String \$ip,
     String \$fqdn = \$title,
     String \$port,
-    String \$mode = 'tcp',    
+    String \$mode,    
   ){
     haproxy::listen { "\${service}":
+      mode             => \$mode,
       collect_exported => false,
       ipaddress        => \$::ipaddress,
       ports            => \$port,
     }
     haproxy::balancermember { "\${service}_01":
       listening_service => \$service,
-      mode              => \$mode,
       server_names      => \$fqdn,
       ipaddresses       => \$ip,
       ports             => \$port,
