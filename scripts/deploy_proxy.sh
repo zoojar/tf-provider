@@ -26,6 +26,7 @@ while test $# -gt 0; do
                         echo "-f, --puppetserver_fqdn           Puppetserver FQDN (balancermember)"
                         echo "-i, --puppetserver_ip             Puppetserver ip (balancermember)"
                         echo "-p, --puppetserver_port           Puppetserver port (balancermember)"
+                        echo "-r, --repohost_ip_fqdn_port       Repohost ip, fqdn & port. Split by underscore; eg, 10.38.1.71_repohost.local_80"
                         exit 0
                         ;;
                 -f)
@@ -84,6 +85,20 @@ while test $# -gt 0; do
                         puppetserver_port=`echo $1 | sed -e 's/^[^=]*=//g'`
                         shift
                         ;;  
+                -r)
+                        shift
+                        if test $# -gt 0; then
+                                repohost_ip_fqdn_port=$1
+                        else
+                                echo "ERROR: --puppetserver_port|-p NOT specified."
+                                exit 1
+                        fi
+                        shift
+                        ;;
+                --repohost_ip_fqdn_port*)
+                        repohost_ip_fqdn_port=`echo $1 | sed -e 's/^[^=]*=//g'`
+                        shift
+                        ;;  
                 *)
                         break
                         ;;
@@ -109,6 +124,11 @@ for module in $puppet_modules ; do
   puppet module install $tmp_puppet_modules/$module --ignore-dependencies
 done
 
+IFS='_' read -r -a repohost_ip_fqdn_port_array <<< $repohost_ip_fqdn_port
+reposerver_ip="${repohost_ip_fqdn_port_array[0]}"
+reposerver_fqdn="${repohost_ip_fqdn_port_array[1]}"
+reposerver_port="${repohost_ip_fqdn_port_array[2]}"
+
 echo "$(date) INFO: Deploying HAProxy via Puppet..." | tee -a  $log_file
 cat >$deploy_proxy_pp <<EOF
   sysctl { 'net.ipv4.ip_nonlocal_bind':    value => '1', }
@@ -119,6 +139,7 @@ cat >$deploy_proxy_pp <<EOF
   class { 'haproxy': 
     require => Sysctl['net.ipv4.ip_nonlocal_bind','net.ipv4.ip_local_port_range'],
   }
+
   haproxy::listen { 'puppetserver':
     collect_exported => false,
     ipaddress        => \$::ipaddress,
@@ -131,6 +152,21 @@ cat >$deploy_proxy_pp <<EOF
     ports             => '$puppetserver_port',
     options           => 'check',
   }
+
+  haproxy::listen { 'reposerver':
+    collect_exported => false,
+    mode             => http,
+    ipaddress        => \$::ipaddress,
+    ports            => '$reposerver_port',
+  }
+  haproxy::balancermember { 'reposerver01':
+    listening_service => 'reposerver',
+    server_names      => '$reposerver_fqdn',
+    ipaddresses       => '$reposerver_ip',
+    ports             => '$reposerver_port',
+    options           => 'check',
+  }
+
   haproxy::listen { 'stats':
     mode      => 'http',
     ports     => '$stats_port',
@@ -145,6 +181,7 @@ cat >$deploy_proxy_pp <<EOF
     },
   }
   firewall { '814 acc tcp dport $puppetserver_port': proto  => 'tcp', dport  => $puppetserver_port, action => 'accept' } 
+  firewall { '880 acc tcp dport $reposerver_port': proto  => 'tcp', dport  => $reposerver_port, action => 'accept' } 
   firewall { '815 acc tcp dport $stats_port': proto  => 'tcp', dport  => $stats_port, action => 'accept' } 
   class {'firewall':
     ensure => stopped,
