@@ -81,7 +81,7 @@ cat >$deploy_proxy_pp <<EOF
     String \$service = \$title,
     String \$ip,
     String \$fqdn = \$title,
-    Integer \$port,
+    String \$port,
     String \$mode = 'tcp',    
   ){
     haproxy::listen { "\${service}":
