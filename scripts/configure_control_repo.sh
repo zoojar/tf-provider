@@ -13,6 +13,7 @@ log_file='/tmp/configure_control_repo.log'
 configure_control_repo_pp='/tmp/configure_control_repo.pp'
 tmp_puppet_modules='/tmp/puppet_modules'
 control_repo_staging_dir='/tmp/control-repo-staging' #TODO: Expose & parametarize ?
+puppet_modules_baseurl=$1
 
 read -d '' puppet_modules <<'EOF'
 puppet-r10k-6.0.0.tar.gz
