@@ -84,12 +84,14 @@ exec {"add_key_${initrepo_sshkey_file}_to_known_hosts_for_${git_server}":
   refreshonly  => true,
   path         => '/usr/bin',
   command      => "echo \"${git_server} \$(cat ${initrepo_sshkey_file}.pub)\" >> /${initrepo_user}/.ssh/known_hosts",
+  subscribe    => Ssh_keygen['initrepo'],
 }
 
 exec {"add_key_${r10k_sshkey_file}_to_known_hosts_for_${git_server}":
   refreshonly  => true,
   path         => '/usr/bin',
   command      => "echo \"${git_server} \$(cat ${r10k_sshkey_file}.pub)\" >> /${initrepo_user}/.ssh/known_hosts",
+  subscribe    => Ssh_keygen['r10k_deploy'],
 }
 
 git_deploy_key { 'gitlab_deploy_key_for_control_repo':
@@ -106,25 +108,33 @@ git_deploy_key { 'gitlab_deploy_key_for_control_repo':
   #####
   # Push the template control-repo to repo on gitlab box (already previously staged to: $control_repo_staging_dir)...
   # We are assuming a template control-repo has already been staged here to cwd)
-
-  $control_repo_origin = "git:/${initrepo_user}@${git_server}/${initrepo_user}/control-repo.git"
-  
-  vcsrepo { $control_repo_staging_dir:
-    ensure   => present,
-    provider => git,
-    user     => $initrepo_user,
-    identity => $initrepo_sshkey_file,
-  }->
-  exec { "git remote add origin ${control_repo_origin}":
-    cwd     => $control_repo_staging_dir, path    => '/usr/bin',
-  }->
-  exec { "git push -u origin -all #for ${control_repo_origin}":
-    cwd     => $control_repo_staging_dir, path    => '/usr/bin',
-  }->
-  exec { "git push -u origin -tags #for ${control_repo_origin}":
-    cwd     => $control_repo_staging_dir, path    => '/usr/bin',
+  $control_repo_origin = "git@${git_server}:${initrepo_user}/control-repo.git"
+  $init_control_repo_sh_file = '/tmp/init_control_repo.sh'
+  $init_control_repo_sh_content = [
+    "cd ${control_repo_staging_dir}",
+    "&& git remote remove origin",
+    "; eval \"\$(ssh-agent -s)\" && ssh-add ${initrepo_sshkey_file}",
+    "&& git remote add origin ${control_repo_origin}",
+    "&& git push -u origin --all && git push -u origin --tags",
+    "&& rm -rf ${control_repo_staging_dir}/.git"
+  ].join(' ')
+  file { $init_control_repo_sh_file:
+    ensure  => file,
+    content => $init_control_repo_sh_content,
+    mode    => '0755',
+    owner    => 'root',
+    group   => 'root',
   }
-
+  exec { "/bin/bash -c ${init_control_repo_sh_file}":
+    require     => [
+      Exec["add_key_${initrepo_sshkey_file}_to_known_hosts_for_${git_server}"],
+      Set_data["user_keys_${initrepo_user}"],
+    ],
+    refreshonly => true,
+    subscribe   => File[$init_control_repo_sh_file],
+    cwd         => $control_repo_staging_dir, path    => '/bin/bash:/usr/bin',
+    onlyif      => "test -d ${control_repo_staging_dir}/.git",
+  }
   #####
 
   # Fix for puppet gem source defaulting to rubygems.org
