@@ -94,17 +94,11 @@ git_deploy_key { 'gitlab_deploy_key_for_control_repo':
   #####
   # Push the template control-repo to repo on gitlab box (already previously staged to: $control_repo_staging_dir)...
   # We are assuming a template control-repo has already been staged here to cwd)
-  exec {"add_host_${git_server}_to_known_hosts":
-    refreshonly  => true,
-    path         => '/usr/bin',
-    command      => "ssh-keyscan ${git_server} >> /${initrepo_user}/.ssh/known_hosts",
-    subscribe    => File[$init_control_repo_sh_file],
-    onlyif      => "test -d ${control_repo_staging_dir}/.git",
-  }
   $control_repo_origin = "git@${git_server}:${initrepo_user}/control-repo.git"
   $init_control_repo_sh_file = '/tmp/init_control_repo.sh'
   $init_control_repo_sh_content = [
-    "cd ${control_repo_staging_dir}",
+    "ssh-keyscan ${git_server} >> /${initrepo_user}/.ssh/known_hosts",
+    "&& cd ${control_repo_staging_dir}",
     "&& git remote remove origin",
     "; eval \"\$(ssh-agent -s)\" && ssh-add ${initrepo_sshkey_file}",
     "&& git remote add origin ${control_repo_origin}",
