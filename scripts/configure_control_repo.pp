@@ -114,7 +114,6 @@ git_deploy_key { 'gitlab_deploy_key_for_control_repo':
   }
   exec { "/bin/bash -c ${init_control_repo_sh_file}":
     require     => [
-      Exec["add_host_${git_server}_to_known_hosts"],
       Set_data["user_keys_${initrepo_user}"],
     ],
     refreshonly => true,
