@@ -81,7 +81,8 @@ resource "vsphere_virtual_machine" "puppetserver" {
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       ". /tmp/scripts/deploy_puppetserver.sh --psk=${var.psk}",
       "puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
-      "FACTER_gem_source_url=${var.gem_source_url} FACTER_puppet_modules_baseurl=${var.puppet_modules_baseurl} FACTER_git_server=${var.git_server} FACTER_git_user=${var.git_user} FACTER_git_password=${var.git_password} puppet apply /tmp/scripts/configure_control_repo.pp -v"
+      ". /tmp/scripts/configure_control_repo.sh",
+      "FACTER_gem_source_url=${var.gem_source_url} FACTER_puppet_modules_baseurl=${var.puppet_modules_baseurl} FACTER_git_server=${var.git_server} FACTER_git_user=${var.git_user} FACTER_git_password=${var.git_password} puppet apply /tmp/scripts/configure_control_repo.pp -v",
     ]
   }
 
