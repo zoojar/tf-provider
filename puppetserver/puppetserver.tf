@@ -72,13 +72,8 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
 
   provisioner "file" {
-    source      = "../control-repo-staging"
-    destination = "/tmp"
-  }
-
-  provisioner "file" {
-    source      = "../repohost_webroot/module-staging"
-    destination = "/tmp"
+    source      = "../control-repo-staging/production"
+    destination = "/etc/puppetlabs/code/environments"
   }
 
   provisioner "remote-exec" {
@@ -86,8 +81,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       "yum install -y puppet-agent",
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
-      "/opt/puppetlabs/bin/puppet apply /tmp/control-repo-staging/site/profiles/manifests/puppetserver/install.pp -v",
-      "/opt/puppetlabs/bin/puppet apply /tmp/control-repo-staging/site/profiles/manifests/puppetserver/staging.pp -v",
+      "/opt/puppetlabs/bin/puppet apply -e \'include roles::puppetserver\'",
     ]
   }
 
