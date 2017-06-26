@@ -77,8 +77,8 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
 
   provisioner "file" {
-    source      = "../repohost_webroot/base_puppet_modules/"
-    destination = "/tmp/module-staging"
+    source      = "../repohost_webroot/module-staging"
+    destination = "/tmp"
   }
 
   provisioner "remote-exec" {
