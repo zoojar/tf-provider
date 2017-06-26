@@ -85,9 +85,9 @@ resource "vsphere_virtual_machine" "puppetserver" {
     inline = [
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       "yum install -y puppet-agent",
-      "/opt/puppet/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
-      "/opt/puppet/bin/puppet apply /tmp/control-repo-staging/site/profiles/manifests/puppetserver/install.pp -v",
-      "/opt/puppet/bin/puppet apply /tmp/control-repo-staging/site/profiles/manifests/puppetserver/staging.pp -v",
+      "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
+      "/opt/puppetlabs/bin/puppet apply /tmp/control-repo-staging/site/profiles/manifests/puppetserver/install.pp -v",
+      "/opt/puppetlabs/bin/puppet apply /tmp/control-repo-staging/site/profiles/manifests/puppetserver/staging.pp -v",
     ]
   }
 
