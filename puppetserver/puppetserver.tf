@@ -72,7 +72,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
 
   provisioner "file" {
-    source      = "../../control-repo/"
+    source      = "control-repo/"
     destination = "/tmp/control-repo-staging"
   }
 
