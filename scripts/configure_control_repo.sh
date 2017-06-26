@@ -28,6 +28,9 @@ puppetlabs-git-0.5.0.tar.gz
 gentoo-portage-2.3.0.tar.gz
 puppetlabs-concat-2.2.1.tar.gz
 maestrodev-ssh_keygen-1.3.1.tar.gz
+puppetlabs-inifile-1.6.0.tar.gz
+puppetlabs-firewall-1.8.2.tar.gz
+puppetlabs-hocon-0.9.4.tar.gz
 EOF
 
 echo "$(date) INFO: Downloading & installing Puppet modules from [$puppet_modules_baseurl]" | tee -a  $log_file
