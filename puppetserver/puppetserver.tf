@@ -87,7 +87,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
 
   provisioner "remote-exec" {
     inline = [
-      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --modulepath=/etc/puppetlabs/code/environments/production/modules:/etc/puppetlabs/code/environments/production/site",
+      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\"",
     ]
   }
 }
