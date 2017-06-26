@@ -72,22 +72,22 @@ resource "vsphere_virtual_machine" "puppetserver" {
     destination = "/tmp"
   }
 
-  provisioner "remote-exec" { ### block internet & add route back to vpn
-    inline = [ "mkdir -p ${var.puppet_codedir}" ]
-  }
-
-  provisioner "file" {
-    source      = "../control-repo-staging/production"
-    destination = "${var.puppet_codedir}/environments"
-  }
-
   provisioner "remote-exec" {
     inline = [
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       "yum install -y puppet-agent",
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
-      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\"",
     ]
   }
 
+  provisioner "file" {
+    source      = "../control-repo-staging/production/"
+    destination = "${var.puppet_codedir}/environments/production/"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --modulepath=/etc/puppetlabs/code/environments/production/modules:/etc/puppetlabs/code/environments/production/site",
+    ]
+  }
 }
