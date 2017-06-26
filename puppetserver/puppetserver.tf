@@ -23,6 +23,7 @@ variable "git_server_ip"          {}
 variable "git_user"               {}
 variable "git_password"           {}
 variable "puppet_modules_baseurl" {}
+variable "puppet_codedir"         { type = "string" default = "/etc/puppetlabs/code" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -71,9 +72,13 @@ resource "vsphere_virtual_machine" "puppetserver" {
     destination = "/tmp"
   }
 
+  provisioner "remote-exec" { ### block internet & add route back to vpn
+    inline = [ "mkdir -p ${var.puppet_codedir}" ]
+  }
+
   provisioner "file" {
     source      = "../control-repo-staging/production"
-    destination = "/etc/puppetlabs/code/environments"
+    destination = "${var.puppet_codedir}/environments"
   }
 
   provisioner "remote-exec" {
