@@ -81,7 +81,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       "yum install -y puppet-agent",
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
-      "/opt/puppetlabs/bin/puppet apply -e \'include roles::puppetserver\'",
+      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\"",
     ]
   }
 
