@@ -24,6 +24,8 @@ variable "git_user"               {}
 variable "git_password"           {}
 variable "puppet_modules_baseurl" {}
 variable "puppet_codedir"         { type = "string" default = "/etc/puppetlabs/code" }
+variable "repohost_fqdn"          { type = "string" default = "repohost.vsphere.local" }
+variable "repohost_ip"            { type = "string" default = "192.168.0.162" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -77,6 +79,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       "yum install -y puppet-agent",
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
+      "/opt/puppetlabs/bin/puppet resource host ${var.repohost_fqdn} ip=${var.repohost_ip}", #fix for absence of dns. 
     ]
   }
 
