@@ -91,7 +91,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
-      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\"",
+      "FACTER_masterless=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\"",
     ]
   }
 }
