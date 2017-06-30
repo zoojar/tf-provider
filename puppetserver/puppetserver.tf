@@ -79,14 +79,13 @@ resource "vsphere_virtual_machine" "puppetserver" {
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       "yum install -y puppetserver",
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
-      "/opt/puppetlabs/bin/puppet resource host ${var.repohost_fqdn} ip=${var.repohost_ip}", #fix for absence of dns.
-      "mkdir -p ${var.puppet_codedir}/staging_control-repo", 
+      "/opt/puppetlabs/bin/puppet resource host ${var.repohost_fqdn} ip=${var.repohost_ip}", #fix for absence of dns. 
     ]
   }
 
   provisioner "file" {
     source      = "../control-repo-staging/production/"
-    destination = "${var.puppet_codedir}/staging_control-repo/"
+    destination = "${var.puppet_codedir}/environments/production/"
   }
 
   provisioner "file" {
@@ -97,7 +96,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
-      "FACTER_masterless=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --modulepath=${var.puppet_codedir}/modules:${var.puppet_codedir}/staging_control-repo",
+      "FACTER_masterless=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --modulepath=/etc/puppetlabs/code/modules:/etc/puppetlabs/code/environments/production/site:/etc/puppetlabs/code/environments/production/modules",
     ]
   }
 }
