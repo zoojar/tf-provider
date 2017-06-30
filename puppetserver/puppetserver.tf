@@ -85,7 +85,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
 
   provisioner "file" {
     source      = "../control-repo-staging/production/"
-    destination = "${var.puppet_codedir}/environments/production/"
+    destination = "${var.puppet_codedir}/staging_control-repo/"
   }
 
   provisioner "file" {
@@ -96,7 +96,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
-      "FACTER_masterless=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --modulepath=/etc/puppetlabs/code/modules:/etc/puppetlabs/code/environments/production/site:/etc/puppetlabs/code/environments/production/modules",
+      "FACTER_masterless=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --modulepath=${var.puppet_codedir}/modules:${var.puppet_codedir}/staging_control-repo",
     ]
   }
 }
