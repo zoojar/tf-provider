@@ -39,8 +39,9 @@ resource "vsphere_virtual_machine" "repohost" {
   }
 
   disk {
-    type     = "thin" 
-    template = "${var.template}" 
+    type      = "thin" 
+    template  = "${var.template}" 
+    datastore = "default"
   }
   
   connection {

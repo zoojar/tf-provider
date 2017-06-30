@@ -42,8 +42,9 @@ resource "vsphere_virtual_machine" "vcs" {
   }
 
   disk {
-    type     = "thin" 
-    template = "${var.template}" 
+    type      = "thin" 
+    template  = "${var.template}" 
+    datastore = "default"
   }
 
   connection {
@@ -60,6 +61,15 @@ resource "vsphere_virtual_machine" "vcs" {
     ]
   }
   ###
+ 
+  provisioner "local-exec" {
+    command = "yes y | ssh-keygen -t dsa -C r10k -f id_dsa_r10k -q -N ''"
+  }
+
+  provisioner "file" {
+    source      = "id_dsa_r10k.pub"
+    destination = "/home/root/.ssh/id_dsa_r10k.pub"
+  }
 
   provisioner "file" {
     source      = "scripts"

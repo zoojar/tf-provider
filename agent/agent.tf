@@ -44,8 +44,9 @@ resource "vsphere_virtual_machine" "agent" {
   }
 
   disk {
-    type     = "thin" 
-    template = "${var.template}" 
+    type      = "thin" 
+    template  = "${var.template}" 
+    datastore = "default"
   }
 
   connection {

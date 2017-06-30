@@ -41,8 +41,9 @@ resource "vsphere_virtual_machine" "proxy" {
   }
 
   disk {
-    type     = "thin" 
-    template = "${var.template}" 
+    type      = "thin" 
+    template  = "${var.template}" 
+    datastore = "default"
   }
 
   connection {
