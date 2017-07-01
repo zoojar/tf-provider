@@ -66,6 +66,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
     inline = [
       "route add default gw 192.168.0.2",
       "ip route add 10.8.0.0/24 via 192.168.0.1",
+      "mkdir -p /repobase",
     ]
   }
   ###
@@ -82,6 +83,11 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
       "/opt/puppetlabs/bin/puppet resource host ${var.repohost_fqdn} ip=${var.repohost_ip}", #fix for absence of dns. 
     ]
+  }
+
+  provisioner "file" {
+    source      = "../repohost_webroot/repobase.tar.gz"
+    destination = "/repobase/repobase.tar.gz" 
   }
 
   provisioner "file" {
