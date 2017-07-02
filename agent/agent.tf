@@ -20,6 +20,7 @@ variable "puppetserver_fqdn"      {}
 variable "puppetserver_ip"        {}
 variable "psk"                    {}
 variable "role"                   {}
+variable "init_script"            { type = "string" default = "ls" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -71,6 +72,7 @@ resource "vsphere_virtual_machine" "agent" {
   
   provisioner "remote-exec" {
     inline = [
+      "${var.init_script}",
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       ". /tmp/scripts/set_etc_hosts.sh ${var.puppetserver_ip} ${var.puppetserver_fqdn}",
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=${var.puppetserver_fqdn} --psk=${var.psk} --role=${var.role}",
