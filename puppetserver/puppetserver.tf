@@ -86,11 +86,6 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
 
   provisioner "file" {
-    source      = "../repohost_webroot/repobase.tar.gz"
-    destination = "/repobase/repobase.tar.gz" 
-  }
-
-  provisioner "file" {
     source      = "../control-repo-staging/production/"
     destination = "${var.puppet_codedir}/environments/production/"
   }
