@@ -76,7 +76,6 @@ resource "vsphere_virtual_machine" "agent" {
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
       ". /tmp/scripts/set_etc_hosts.sh ${var.puppetserver_ip} ${var.puppetserver_fqdn}",
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=${var.puppetserver_fqdn} --psk=${var.psk} --role=${var.role}",
-      "/opt/puppetlabs/puppet/bin/puppet agent -tv --detailed-exitcodes; r=$? ; if [ \"$r\" -eq \"4\" ]; then exit 0; fi",
     ]
   }
 
