@@ -20,7 +20,6 @@ variable "puppetserver_fqdn"      {}
 variable "puppetserver_ip"        {}
 variable "repohost_fqdn"          {}
 variable "repohost_ip"            {}
-variable "puppetserver_ip"        {}
 variable "psk"                    {}
 variable "role"                   {}
 variable "init_script"            { type = "string" default = "ls" }
