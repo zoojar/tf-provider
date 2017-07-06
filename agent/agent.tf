@@ -18,6 +18,9 @@ variable "hostname"           {}
 variable "yumrepo_baseurl"        {}
 variable "puppetserver_fqdn"      {}
 variable "puppetserver_ip"        {}
+variable "repohost_fqdn"          {}
+variable "repohost_ip"            {}
+variable "puppetserver_ip"        {}
 variable "psk"                    {}
 variable "role"                   {}
 variable "init_script"            { type = "string" default = "ls" }
@@ -74,6 +77,7 @@ resource "vsphere_virtual_machine" "agent" {
     inline = [
       "${var.init_script}",
       ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
+      ". /tmp/scripts/set_etc_hosts.sh ${var.puppetserver_ip} ${var.puppetserver_fqdn}",
       ". /tmp/scripts/set_etc_hosts.sh ${var.puppetserver_ip} ${var.puppetserver_fqdn}",
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=${var.puppetserver_fqdn} --psk=${var.psk} --role=${var.role}",
     ]
