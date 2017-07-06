@@ -36,7 +36,6 @@ resource "vsphere_virtual_machine" "agent" {
   memory       = "${var.memory_mb}"
   datacenter   = "${var.datacenter}"
   dns_servers  = "${var.dns_servers}"
-  linked_clone = true,
 
   network_interface {
     label              = "${var.vm_network}"
