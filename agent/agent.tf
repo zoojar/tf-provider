@@ -82,4 +82,10 @@ resource "vsphere_virtual_machine" "agent" {
     ]
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "shutdown -r 2",
+    ]
+  }
+
 }
