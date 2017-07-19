@@ -53,6 +53,7 @@ resource "vsphere_virtual_machine" "agent_wim" {
 
   connection {
     type     = "winrm"
+    host     = "${var.ipv4_address}"
     user     = "${var.winrm_username}"
     password = "${var.winrm_password}"
   }
