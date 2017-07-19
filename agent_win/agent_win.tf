@@ -73,7 +73,7 @@ resource "vsphere_virtual_machine" "agent_wim" {
   
   provisioner "remote-exec" {
     inline = [
-      "echo \'${var.puppetserver_ip} ${var.puppetserver_fqdn}\'' >> c:\\windows\\system32\\drivers\\etc\\hosts",
+      "echo \'${var.puppetserver_ip} ${var.puppetserver_fqdn}\' >> c:\\windows\\system32\\drivers\\etc\\hosts",
       "mkdir c:\\programdata\\puppetlabs\\puppet\\etc",
       "cmd /c echo set-content c:\\Programdata\\PuppetLabs\\Puppet\\etc\\csr_attributes.yaml \'custom_attributes:\\r\\n 1.2.840.113549.1.9.7: ${var.psk}\\r\\nextension_requests:\\r\\n  pp_role: ${var.role}\\r\\n\\' ",
       "echo wget http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -outfile c:\\windows\\temp\\puppet-enterprise-installer.msi",
