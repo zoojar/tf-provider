@@ -68,7 +68,7 @@ resource "vsphere_virtual_machine" "agent_wim" {
 
   provisioner "file" {
     source      = "scripts"
-    destination = "c:\windows\temp"
+    destination = "c:\\windows\\temp"
   }
   
   provisioner "remote-exec" {
