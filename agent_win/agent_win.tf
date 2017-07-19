@@ -31,7 +31,7 @@ provider "vsphere" {
   allow_unverified_ssl = true
 }
 
-resource "vsphere_virtual_machine" "agent" {
+resource "vsphere_virtual_machine" "agent_wim" {
   name         = "${var.hostname}"
   vcpu         = "${var.vcpu_count}"
   memory       = "${var.memory_mb}"
@@ -80,6 +80,7 @@ resource "vsphere_virtual_machine" "agent" {
       "Start-Process -FilePath msiexec -ArgumentList /i, c:\\Windows\\temp\\puppet-enterprise-installer.msi, PUPPET_MASTER_SERVER=${var.puppetserver_fqdn}, /quiet",
     ]
   }
+
 
 
 }
