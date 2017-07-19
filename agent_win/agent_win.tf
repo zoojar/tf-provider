@@ -22,6 +22,9 @@ variable "repohost_ip"            {}
 variable "psk"                    {}
 variable "role"                   {}
 variable "init_script"            { type = "string" default = "ls" }
+variable "powershell_cmd"         { type = "string" default = "powershell.exe -sta -ExecutionPolicy Unrestricted" }
+variable "temp_path"              { type = "string" default = "c:\\windows\\temp" }
+
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -57,6 +60,7 @@ resource "vsphere_virtual_machine" "agent_wim" {
     host     = "${var.ipv4_address}"
     user     = "${var.winrm_username}"
     password = "${var.winrm_password}"
+    timeout  = "15m"
   }
 
   ### Environment specific stuff...
@@ -70,14 +74,18 @@ resource "vsphere_virtual_machine" "agent_wim" {
 
   provisioner "file" {
     source      = "scripts"
-    destination = "c:\\windows\\temp"
+    destination = "${var.temp_path}"
   }
   
+
+
   provisioner "remote-exec" {
     inline = [
       "echo \"${var.puppetserver_ip} ${var.puppetserver_fqdn}\" >> c:\\windows\\system32\\drivers\\etc\\hosts",
-      "; & restart-computer -asjob"
-      #"& \"c:\\windows\\temp\\scripts\\install_puppet_agent.ps1\" -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role role::base_windows -psk 123"
+      "; ${var.powershell_cmd} -Command \"& restart-computer\" ",
+      #"; ${var.powershell_cmd} -file ${var.temp_path}\\scripts\\install_puppet_agent.ps1 -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role role::base_windows -psk 123",
+      
+      #"& \"c:\\windows\\temp\\scripts\\install_puppet_agent.ps1\" -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role role::base_windows -psk 123",
     ]
   }
 
