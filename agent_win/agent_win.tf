@@ -74,7 +74,7 @@ resource "vsphere_virtual_machine" "agent_wim" {
 
   provisioner "file" {
     source      = "scripts"
-    destination = "${var.temp_path}"
+    destination = "${var.temp_path}\\"
   }
   
 
