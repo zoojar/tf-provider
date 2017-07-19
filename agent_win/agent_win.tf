@@ -74,7 +74,7 @@ resource "vsphere_virtual_machine" "agent_wim" {
   provisioner "remote-exec" {
     inline = [
       "echo \'${var.puppetserver_ip} ${var.puppetserver_fqdn}\' >> c:\\windows\\system32\\drivers\\etc\\hosts",
-      "& \"c:\windows\temp\scripts\install_puppet_agent.ps1\" -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role role::base_windows -psk 123"
+      "& c:\windows\temp\scripts\install_puppet_agent.ps1 -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role role::base_windows -psk 123"
     ]
   }
 
