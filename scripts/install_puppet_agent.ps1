@@ -9,5 +9,7 @@ param (
 mkdir c:\programdata\puppetlabs\puppet\etc
 set-content c:\Programdata\PuppetLabs\Puppet\etc\csr_attributes.yaml "custom_attributes:\`r\`n 1.2.840.113549.1.9.7: $psk\`r\`nextension_requests:\`r\`n  pp_role: $role\`r\`n"
 wget $installer_url -outfile c:\\windows\\temp\\puppet-enterprise-installer.msi
-Start-Process -FilePath msiexec -ArgumentList /i c:\\Windows\\temp\\puppet-enterprise-installer.msi PUPPET_MASTER_SERVER=$puppet_master_server /quiet
-  
+$msiexec_path = "C:\Windows\System32\msiexec.exe"
+$msiexec_args = "/qn /log ${install_log} /i ${msi_dest} PUPPET_MASTER_SERVER=${puppet_master_server}"
+$msiexec_proc = [System.Diagnostics.Process]::Start($msiexec_path, $msiexec_args)
+$msiexec_proc.WaitForExit()
