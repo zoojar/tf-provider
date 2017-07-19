@@ -32,11 +32,12 @@ provider "vsphere" {
 }
 
 resource "vsphere_virtual_machine" "agent_wim" {
-  name         = "${var.hostname}"
-  vcpu         = "${var.vcpu_count}"
-  memory       = "${var.memory_mb}"
-  datacenter   = "${var.datacenter}"
-  dns_servers  = "${var.dns_servers}"
+  name               = "${var.hostname}"
+  vcpu               = "${var.vcpu_count}"
+  memory             = "${var.memory_mb}"
+  datacenter         = "${var.datacenter}"
+  dns_servers        = "${var.dns_servers}"
+  windows_opt_config = { admin_password = "Adm!n!strat0r" }
 
   network_interface {
     label              = "${var.vm_network}"
