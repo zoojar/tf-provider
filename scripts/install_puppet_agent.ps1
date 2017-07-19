@@ -1,4 +1,4 @@
- #install_puppet_agent.ps1 
+﻿ #install_puppet_agent.ps1 
 param (
   [string]$puppet_master_server = $(throw "-puppet_master_server is required."),
   [string]$installer_url = $(throw "-installer_url is required."),
