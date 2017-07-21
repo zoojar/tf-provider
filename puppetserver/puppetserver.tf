@@ -95,11 +95,6 @@ resource "vsphere_virtual_machine" "puppetserver" {
     destination = "${var.puppet_codedir}/modules/"
   }
 
-  provisioner "file" {
-    source      = "scripts/defaults.rb"
-    destination = "/opt/puppetlabs/puppet/lib/ruby/2.1.0/rubygems/defaults.rb"
-  }
-
   provisioner "remote-exec" {
     inline = [
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
