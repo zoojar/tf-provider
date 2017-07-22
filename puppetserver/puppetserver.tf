@@ -96,7 +96,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
 
   provisioner "file" {
-    source      = "scrpts/defaults.rb"
+    source      = "scripts/defaults.rb"
     destination = "/opt/puppetlabs/puppet/lib/ruby/2.1.0/rubygems/defaults.rb"
   }
 
