@@ -97,7 +97,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
 
   provisioner "file" {
     source      = "scripts/defaults.rb"
-    destination = "/opt/puppetlabs/puppet/lib/ruby/2.1.0/rubygems/defaults.rb"
+    destination = "/opt/puppetlabs/puppet/lib/ruby/2.1.0/rubygems/defaults.rb_new"
   }
 
   provisioner "remote-exec" {
