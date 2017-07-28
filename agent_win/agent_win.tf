@@ -93,7 +93,7 @@ resource "vsphere_virtual_machine" "agent_win" {
   provisioner "remote-exec" {
     inline = [
       "; ${var.powershell_cmd} -file ${var.temp_path}\\install_puppet_agent.ps1 -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role role::base_windows -psk 123",
-      "; ${var.powershell_cmd} -command 'puppet agent -tvs'"
+      "; ${var.powershell_cmd} -command 'puppet agent -tv'"
     ]
   }
 
