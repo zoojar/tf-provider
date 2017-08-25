@@ -81,11 +81,4 @@ resource "vsphere_virtual_machine" "agent" {
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=${var.puppetserver_fqdn} --psk=${var.psk} --role=${var.role}",
     ]
   }
-
-  provisioner "remote-exec" {
-    inline = [
-      "shutdown -r 2",
-    ]
-  }
-
 }
