@@ -82,7 +82,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "yum install -y puppetserver",
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
       "/opt/puppetlabs/bin/puppet resource host ${var.repohost_fqdn} ip=${var.repohost_ip}", #fix for absence of dns. 
-      ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=$(hostname -f) --psk=123 --role=roles::puppetserver",
+      '. /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=$(hostname -f) --psk=123 --role=roles::puppetserver',
       '/opt/puppetlabs/bin/puppet config set server $(hostname -f)',
     ]
   }
