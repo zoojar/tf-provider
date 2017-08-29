@@ -107,7 +107,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
       "FACTER_masterless=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --modulepath=/etc/puppetlabs/code/modules:/etc/puppetlabs/code/environments/production/site:/etc/puppetlabs/code/environments/production/modules",
       "sleep 90",
-      "rm -rf /etc/puppetlabs/puppet/ssl,"
+      "rm -rf /etc/puppetlabs/puppet/ssl",
       "puppet agent -tv",
     ]
   }
