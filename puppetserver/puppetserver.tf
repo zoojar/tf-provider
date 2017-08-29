@@ -16,6 +16,7 @@ variable "hostname"               {}
     
 variable "yumrepo_baseurl"        {}
 variable "psk"                    {}
+variable "role"                   {}
 variable "control_repo"           {}
 variable "gem_source_url"         {}
 variable "git_server"             {}
