@@ -104,6 +104,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "sleep 180",
       "rm -rf /etc/puppetlabs/puppet/ssl",
       "rm -f /etc/puppetlabs/puppet/ssl_puppetserver/ca/signed/puppetserver.vsphere.local.pem",
+      "service puppetserver restart",
       "puppet agent -tv",
     ]
   }
