@@ -93,11 +93,6 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
 
   provisioner "file" {
-    source      = "../control-repo-staging/modules/"
-    destination = "${var.puppet_codedir}/modules/"
-  }
-
-  provisioner "file" {
     source      = "scripts/defaults.rb"
     destination = "/opt/puppetlabs/puppet/lib/ruby/2.1.0/rubygems/defaults.rb"
   }
