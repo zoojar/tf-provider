@@ -101,9 +101,8 @@ resource "vsphere_virtual_machine" "puppetserver" {
     inline = [
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
       "FACTER_staging_puppetserver=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --modulepath=/etc/puppetlabs/code/modules:/etc/puppetlabs/code/environments/production/site:/etc/puppetlabs/code/environments/production/modules",
-      "sleep 180",
       "rm -rf /etc/puppetlabs/puppet/ssl",
-      "rm -f /etc/puppetlabs/puppet/ssl_puppetserver/ca/signed/puppetserver.vsphere.local.pem",
+      "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/puppetserver.vsphere.local.pem",
       "service puppetserver restart",
       "puppet agent -tv",
     ]
