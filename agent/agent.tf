@@ -81,6 +81,7 @@ resource "vsphere_virtual_machine" "agent" {
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=${var.puppetserver_fqdn} --psk=${var.psk} --role=${var.role}",
       "/opt/puppetlabs/bin/puppet agent -tv",
       "/opt/puppetlabs/bin/puppet agent -tv",
+      'if [ $? == '2' ]; then exit 0 ; fi ',
     ]
   }
 }

@@ -105,6 +105,8 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/puppetserver.vsphere.local.pem",
       "service puppetserver restart",
       "puppet agent -tv",
+      "puppet agent -tv",
+      'if [ $? == '2' ]; then exit 0 ; fi ',
     ]
   }
 }
