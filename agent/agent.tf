@@ -79,6 +79,8 @@ resource "vsphere_virtual_machine" "agent" {
       ". /tmp/scripts/set_etc_hosts.sh ${var.puppetserver_ip} ${var.puppetserver_fqdn}",
       ". /tmp/scripts/set_etc_hosts.sh ${var.repohost_ip} ${var.repohost_fqdn}",
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=${var.puppetserver_fqdn} --psk=${var.psk} --role=${var.role}",
+      "/opt/puppetlabs/bin/puppet agent -tv",
+      "/opt/puppetlabs/bin/puppet agent -tv",
     ]
   }
 }
