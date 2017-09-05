@@ -106,7 +106,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "service puppetserver restart",
       "puppet agent -tv",
       "puppet agent -tv",
-      'if [ $? == '2' ]; then exit 0 ; fi ',
+      "if [ $? == '2' ]; then exit 0 ; fi ",
     ]
   }
 }
