@@ -87,6 +87,7 @@ resource "vsphere_virtual_machine" "repohost" {
       ". /tmp/scripts/set_etc_hosts.sh ${var.puppetserver_ip} ${var.puppetserver_fqdn}",
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=${var.puppetserver_fqdn} --psk=${var.psk} --role=${var.role}",
       "/opt/puppetlabs/bin/puppet config set --section=agent runinterval 60",
+      "/opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true",
     ]
   }
 
