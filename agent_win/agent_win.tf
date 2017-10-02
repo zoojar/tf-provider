@@ -24,7 +24,7 @@ variable "role"                   {}
 variable "init_script"            { type = "string" default = "ls" }
 variable "powershell_cmd"         { type = "string" default = "powershell.exe -sta -ExecutionPolicy Unrestricted" }
 variable "temp_path"              { type = "string" default = "c:\\windows\\temp" }
-variable "puppet_agent_certname"  { type = "string" default = "${var.hostname}" }
+variable "puppet_agent_certname"  { type = "string" default = "" }
 
 
 # Configure the VMware vSphere Provider
