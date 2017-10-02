@@ -24,7 +24,8 @@ variable "role"                   {}
 variable "init_script"            { type = "string" default = "ls" }
 variable "powershell_cmd"         { type = "string" default = "powershell.exe -sta -ExecutionPolicy Unrestricted" }
 variable "temp_path"              { type = "string" default = "c:\\windows\\temp" }
-variable "domain"                 { type = "string" default = "vsphere.local" }
+variable "puppet_agent_certname"  { type = "string" default = "${var.hostname}" }
+
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -92,7 +93,7 @@ resource "vsphere_virtual_machine" "agent_win" {
 
   provisioner "remote-exec" {
     inline = [
-      "; ${var.powershell_cmd} -file ${var.temp_path}\\install_puppet_agent.ps1 -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role roles::base_windows -psk 123 -puppet_agent_certname ${var.hostname}.${var.domain}",
+      "; ${var.powershell_cmd} -file ${var.temp_path}\\install_puppet_agent.ps1 -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role roles::base_windows -psk 123 -puppet_agent_certname ${var.puppet_agent_certname}",
       "; ${var.powershell_cmd} -command 'puppet agent -tv'"
     ]
   }
