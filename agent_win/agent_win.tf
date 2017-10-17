@@ -83,6 +83,7 @@ resource "vsphere_virtual_machine" "agent_win" {
   provisioner "remote-exec" {
     inline = [
       "echo ${var.puppetserver_ip} ${var.puppetserver_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
+      "echo ${var.repohost_ip} ${var.repohost_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
       "; ${var.powershell_cmd} -Command \"& restart-computer\" ",
     ]
   }
