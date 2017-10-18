@@ -67,7 +67,7 @@ resource "vsphere_virtual_machine" "agent_win" {
   ### Environment specific stuff...
   provisioner "remote-exec" { ### block internet & add route back to vpn
     inline = [
-      "${var.powershell_cmd} -command 'remove-netroute -nexthop 192.168.0.1 -Confirm:\$false'",
+      "${var.powershell_cmd} -command 'remove-netroute -nexthop 192.168.0.1 -Confirm:$false'",
     ]
   }
   ###
