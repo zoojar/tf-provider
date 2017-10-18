@@ -64,25 +64,16 @@ resource "vsphere_virtual_machine" "agent_win" {
     timeout  = "15m"
   }
 
-  ### Environment specific stuff...
-  provisioner "remote-exec" { ### block internet & add route back to vpn
-    inline = [
-      "${var.powershell_cmd} -command 'remove-netroute -nexthop 192.168.0.1 -Confirm:$false'",
-    ]
-  }
-  ###
-
   provisioner "file" {
     source      = "scripts"
     destination = "${var.temp_path}"
   }
-  
-
 
   provisioner "remote-exec" {
     inline = [
-      "echo ${var.puppetserver_ip} ${var.puppetserver_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
-      "echo ${var.repohost_ip} ${var.repohost_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
+      "${var.powershell_cmd} -command 'remove-netroute -nexthop 192.168.0.1 -Confirm:$false'",
+      "; echo ${var.puppetserver_ip} ${var.puppetserver_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
+      "; echo ${var.repohost_ip} ${var.repohost_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
       "; ${var.powershell_cmd} -Command \"& restart-computer\" ",
     ]
   }
