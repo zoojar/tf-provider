@@ -71,8 +71,7 @@ resource "vsphere_virtual_machine" "agent_win" {
 
   provisioner "remote-exec" {
     inline = [
-      "${var.powershell_cmd} -command 'get-netroute ; remove-netroute -nexthop 192.168.0.1 -Confirm:$false ; get-netroute'",
-      "; echo ${var.puppetserver_ip} ${var.puppetserver_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
+      "echo ${var.puppetserver_ip} ${var.puppetserver_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
       "; echo ${var.repohost_ip} ${var.repohost_fqdn} >> c:\\windows\\system32\\drivers\\etc\\hosts",
       "; ${var.powershell_cmd} -Command \"& restart-computer\" ",
     ]
@@ -84,6 +83,7 @@ resource "vsphere_virtual_machine" "agent_win" {
 
   provisioner "remote-exec" {
     inline = [
+      "${var.powershell_cmd} -command 'remove-netroute -nexthop 192.168.0.1 -Confirm:$false'",
       "; ${var.powershell_cmd} -file ${var.temp_path}\\install_puppet_agent.ps1 -puppet_master_server ${var.puppetserver_fqdn} -installer_url http://${var.repohost_ip}/repo/win/puppet-agent-1.10.4-x64.msi -role roles::base_windows -psk 123 -puppet_agent_certname ${var.puppet_agent_certname}",
       "; ${var.powershell_cmd} -command 'puppet agent -tv'"
     ]
