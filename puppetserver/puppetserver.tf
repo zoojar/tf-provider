@@ -84,16 +84,18 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
       "/opt/puppetlabs/bin/puppet resource host ${var.repohost_fqdn} ip=${var.repohost_ip}", #fix for absence of dns. 
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=puppetserver.vsphere.local --psk=123 --role=${var.role}",
+      "mkdir /tmp/control-repo-staging",
     ]
   }
 
   provisioner "file" {
     source      = "../control-repo-staging/production/"
-    destination = "${var.puppet_codedir}/environments/production/"
+    destination = "/tmp/control-repo-staging/"
   }
 
   provisioner "remote-exec" {
     inline = [
+      "cp -r /tmp/control-repo-staging/. ${var.puppet_codedir}/environments/production/",
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
       "FACTER_staging_puppetserver=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=/etc/puppetlabs/code/environments/production/hiera.yaml --modulepath=/etc/puppetlabs/code/modules:/etc/puppetlabs/code/environments/production/site:/etc/puppetlabs/code/environments/production/modules",
       "rm -rf /etc/puppetlabs/puppet/ssl",
