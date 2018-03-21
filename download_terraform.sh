@@ -7,5 +7,5 @@ then
 else
   echo "$TF_FILE does not exist, downloading..."
   wget -k https://releases.hashicorp.com/terraform/${TF_VERSION}/$TF_FILE
-  unzip terraform_${tf_version}_linux_amd64.zip .
+  unzip terraform_${tf_version}_linux_amd64.zip 
 fi
