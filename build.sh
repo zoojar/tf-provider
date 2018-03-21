@@ -1,6 +1,7 @@
 #!/bin/bash
-terraform -v
-terrafrom init $tf_resource
-if [ "$purge_vm" = "true" ] ; then terraform destroy -force $tf_resource; fi
-terraform apply $tf_resource
-if [ "$keep_vm" != "true" ] ; then terraform destroy -force $tf_resource; fi
+TFBIN=./terraform
+$TFBIN -v
+$TFBIN init $tf_resource
+if [ "$purge_vm" = "true" ] ; then $TFBIN destroy -force $tf_resource; fi
+$TFBIN apply $tf_resource
+if [ "$keep_vm" != "true" ] ; then $TFBIN destroy -force $tf_resource; fi
