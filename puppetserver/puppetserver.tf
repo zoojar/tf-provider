@@ -96,11 +96,10 @@ resource "vsphere_virtual_machine" "puppetserver" {
 
   provisioner "remote-exec" {
     inline = [
-      "cp -r /tmp/control-repo-staging/. ${var.puppet_codedir}/environments/production/",
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
-      "FACTER_staging_puppetserver=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=/etc/puppetlabs/code/environments/production/hiera.yaml --modulepath=/etc/puppetlabs/code/modules:/etc/puppetlabs/code/environments/production/site:/etc/puppetlabs/code/environments/production/modules",
+      ". /etc/puppetlabs/code/environments/production/scripts/bootstrap_r10k.sh http://repohost.local/puppet_modules git@vcs.local:root/control-repo.git http://repohost.local:81",
       "rm -rf /etc/puppetlabs/puppet/ssl",
-      "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/puppetserver.vsphere.local.pem",
+      "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/*.pem",
       "service puppetserver restart",
       "puppet agent -tv",
       "puppet agent -tv",
