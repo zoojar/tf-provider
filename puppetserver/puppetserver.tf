@@ -91,7 +91,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
 
   provisioner "file" {
     source      = "../control-repo-staging/production/"
-    destination = "/tmp/control-repo-staging/"
+    destination = "/etc/puppetlabs/code/environments/production"
   }
 
   provisioner "remote-exec" {
