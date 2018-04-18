@@ -27,6 +27,7 @@ variable "puppet_modules_baseurl" {}
 variable "puppet_codedir"         { type = "string" default = "/etc/puppetlabs/code" }
 variable "repohost_fqdn"          { type = "string" default = "repohost.vsphere.local" }
 variable "repohost_ip"            { type = "string" default = "192.168.0.162" }
+variable "r10k_sshkey_file_content" { type = "string" default = "" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -97,7 +98,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
-      ". /etc/puppetlabs/code/environments/production/scripts/bootstrap_r10k.sh http://repohost.local/puppet_modules git@vcs.local:root/control-repo.git http://repohost.local:81",
+      ". /etc/puppetlabs/code/environments/production/scripts/bootstrap_r10k.sh http://repohost.local/puppet_modules git@vcs.local:root/control-repo.git http://repohost.local:81 ${var.r10k_sshkey_file_content}",
       "rm -rf /etc/puppetlabs/puppet/ssl",
       "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/*.pem",
       "service puppetserver restart",
