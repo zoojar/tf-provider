@@ -94,17 +94,17 @@ resource "vsphere_virtual_machine" "puppetserver" {
     destination = "/tmp/control-repo-staging/"
   }
 
-  #provisioner "remote-exec" {
-  #  inline = [
-  #    "cp -r /tmp/control-repo-staging/. ${var.puppet_codedir}/environments/production/",
-  #    "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
-  #    "FACTER_staging_puppetserver=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=/etc/puppetlabs/code/environments/production/hiera.yaml --modulepath=/etc/puppetlabs/code/modules:/etc/puppetlabs/code/environments/production/site:/etc/puppetlabs/code/environments/production/modules",
-  #    "rm -rf /etc/puppetlabs/puppet/ssl",
-  #    "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/puppetserver.vsphere.local.pem",
-  #    "service puppetserver restart",
-  #    "puppet agent -tv",
-  #    "puppet agent -tv",
-  #    "if [ $? == '2' ]; then exit 0 ; fi ",
-  #  ]
-  #}
+  provisioner "remote-exec" {
+    inline = [
+      "cp -r /tmp/control-repo-staging/. ${var.puppet_codedir}/environments/production/",
+      "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
+      "FACTER_staging_puppetserver=true /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=/etc/puppetlabs/code/environments/production/hiera.yaml --modulepath=/etc/puppetlabs/code/modules:/etc/puppetlabs/code/environments/production/site:/etc/puppetlabs/code/environments/production/modules",
+      "rm -rf /etc/puppetlabs/puppet/ssl",
+      "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/puppetserver.vsphere.local.pem",
+      "service puppetserver restart",
+      "puppet agent -tv",
+      "puppet agent -tv",
+      "if [ $? == '2' ]; then exit 0 ; fi ",
+    ]
+  }
 }
