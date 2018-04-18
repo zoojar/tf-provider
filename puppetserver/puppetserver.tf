@@ -98,7 +98,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
-      ". /etc/puppetlabs/code/environments/production/scripts/bootstrap_r10k.sh http://repohost.local/puppet_modules git@vcs.local:root/control-repo.git http://repohost.local:81 ${var.r10k_sshkey_file_content}",
+      ". /etc/puppetlabs/code/environments/production/scripts/bootstrap_r10k.sh http://repohost.local/puppet_modules git@vcs.local:root/control-repo.git http://repohost.local:81 '${var.r10k_sshkey_file_content}'",
       "rm -rf /etc/puppetlabs/puppet/ssl",
       "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/*.pem",
       "service puppetserver restart",
