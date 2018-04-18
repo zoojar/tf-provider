@@ -26,6 +26,7 @@ variable "init_script"            { type = "string" default = "ls" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
+  version              = "~> 0.4.2"
   user                 = "${var.vsphere_user}"
   password             = "${var.vsphere_password}"
   vsphere_server       = "${var.vsphere_server}"

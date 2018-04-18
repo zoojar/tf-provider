@@ -30,6 +30,7 @@ variable "repohost_ip"            { type = "string" default = "192.168.0.162" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
+  version              = "~> 0.4.2"
   user                 = "${var.vsphere_user}"
   password             = "${var.vsphere_password}"
   vsphere_server       = "${var.vsphere_server}"
