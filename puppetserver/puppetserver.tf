@@ -98,9 +98,9 @@ resource "vsphere_virtual_machine" "puppetserver" {
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x ${var.staging_code_dir}/environments/production/scripts/*",
+      "chmod +x ${var.staging_code_dir}/scripts/*",
       "puppet resource file /etc/puppetlabs/r10k ensure=directory && puppet resource file /etc/puppetlabs/r10k/r10k_id_rsa mode='0400' content='${var.r10k_sshkey_file_content}'",
-      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=${var.staging_code_dir}/environments/production/hiera.yaml --modulepath=${var.staging_code_dir}/environments/production/site:${var.staging_code_dir}/environments/production/modules",
+      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=${var.staging_code_dir}/hiera.yaml --modulepath=${var.staging_code_dir}/site:${var.staging_code_dir}/modules",
       "rm -rf /etc/puppetlabs/puppet/ssl",
       "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/*.pem",
       "service puppetserver restart",
