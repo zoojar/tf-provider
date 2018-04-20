@@ -27,7 +27,7 @@ variable "puppet_modules_baseurl" {}
 variable "puppet_codedir"         { type = "string" default = "/etc/puppetlabs/code" }
 variable "repohost_fqdn"          { type = "string" default = "repohost.vsphere.local" }
 variable "repohost_ip"            { type = "string" default = "192.168.0.162" }
-variable "r10k_sshkey_file_content" { type = "string" default = "" }
+variable "staging_code_dir"       { type = "string" default = "/tmp/control-repo-staging" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -86,19 +86,20 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
       "/opt/puppetlabs/bin/puppet resource host ${var.repohost_fqdn} ip=${var.repohost_ip}", #fix for absence of dns. 
       ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=puppetserver.vsphere.local --psk=123 --role=${var.role}",
-      "mkdir /tmp/control-repo-staging",
+      "mkdir -p ${staging_code_dir}/",
     ]
   }
 
   provisioner "file" {
     source      = "../control-repo-staging/production/"
-    destination = "/etc/puppetlabs/code/environments/production"
+    destination = "${staging_code_dir}"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /etc/puppetlabs/code/environments/production/scripts/*",
-      ". /etc/puppetlabs/code/environments/production/scripts/bootstrap_r10k.sh http://${var.repohost_fqdn}/puppet_modules git@${var.git_server}:root/control-repo.git http://${var.repohost_fqdn}:81 '${var.r10k_sshkey_file_content}'",
+      "cp -r ${staging_code_dir}/. ${var.puppet_codedir}/environments/production/",
+      "chmod +x ${staging_code_dir}/environments/production/scripts/*",
+      "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=${staging_code_dir}/environments/production/hiera.yaml --modulepath=${staging_code_dir}/environments/production/site:${staging_code_dir}/environments/production/modules",
       "rm -rf /etc/puppetlabs/puppet/ssl",
       "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/*.pem",
       "service puppetserver restart",
