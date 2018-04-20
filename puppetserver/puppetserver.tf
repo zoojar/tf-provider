@@ -28,6 +28,7 @@ variable "puppet_codedir"         { type = "string" default = "/etc/puppetlabs/c
 variable "repohost_fqdn"          { type = "string" default = "repohost.vsphere.local" }
 variable "repohost_ip"            { type = "string" default = "192.168.0.162" }
 variable "staging_code_dir"       { type = "string" default = "/tmp/control-repo-staging" }
+variable "r10k_sshkey_file_content" { type = string" default = "" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
@@ -97,8 +98,8 @@ resource "vsphere_virtual_machine" "puppetserver" {
 
   provisioner "remote-exec" {
     inline = [
-      "cp -r ${staging_code_dir}/. ${var.puppet_codedir}/environments/production/",
       "chmod +x ${staging_code_dir}/environments/production/scripts/*",
+      "puppet resource file /etc/puppetlabs/r10k/r10k_id_rsa mode='0400' content='${var.r10k_sshkey_file_content}'",
       "/opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=${staging_code_dir}/environments/production/hiera.yaml --modulepath=${staging_code_dir}/environments/production/site:${staging_code_dir}/environments/production/modules",
       "rm -rf /etc/puppetlabs/puppet/ssl",
       "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/*.pem",
