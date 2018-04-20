@@ -28,7 +28,7 @@ variable "puppet_codedir"         { type = "string" default = "/etc/puppetlabs/c
 variable "repohost_fqdn"          { type = "string" default = "repohost.vsphere.local" }
 variable "repohost_ip"            { type = "string" default = "192.168.0.162" }
 variable "staging_code_dir"       { type = "string" default = "/tmp/control-repo-staging" }
-variable "r10k_sshkey_file_content" { type = string" default = "" }
+variable "r10k_sshkey_file_content" { type = "string" default = "" }
 
 # Configure the VMware vSphere Provider
 provider "vsphere" {
