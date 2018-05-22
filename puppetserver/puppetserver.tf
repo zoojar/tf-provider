@@ -96,10 +96,16 @@ resource "vsphere_virtual_machine" "puppetserver" {
     destination = "${var.staging_code_dir}"
   }
 
+  provisioner "file" {
+    source      = "../r10k_id_rsa"
+    destination = "${var.staging_code_dir}/r10k_id_rsa"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod +x ${var.staging_code_dir}/scripts/*",
-      "puppet resource file /etc/puppetlabs/r10k ensure=directory && puppet resource file /etc/puppetlabs/r10k/r10k_id_rsa mode='0400' content='${var.r10k_sshkey_file_content}'",
+      "puppet resource file /etc/puppetlabs/r10k ensure=directory && puppet resource file /etc/puppetlabs/r10k/r10k_id_rsa mode='0400'", # content='${var.r10k_sshkey_file_content}'",
+      "cat ${var.staging_code_dir}/r10k_id_rsa > /etc/puppetlabs/r10k/r10k_id_rsa",
       "FACTER_staging_puppetserver=r10k /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=${var.staging_code_dir}/hiera.yaml --modulepath=${var.staging_code_dir}/site:${var.staging_code_dir}/site/profiles/files/puppetserver/r10k_module_dependencies:${var.staging_code_dir}/modules",
       "rm -rf /etc/puppetlabs/puppet/ssl",
       "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/*.pem",
