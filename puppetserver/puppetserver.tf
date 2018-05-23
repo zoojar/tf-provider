@@ -74,45 +74,21 @@ resource "vsphere_virtual_machine" "puppetserver" {
     ]
   }
   ###
-
+  
   provisioner "file" {
-    source      = "scripts"
-    destination = "/tmp"
+    source      = "../control-repo-staging/production/scripts/bootstrap_puppetserver.sh"
+    destination = "${var.staging_code_dir}/bootstrap_puppetserver.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
-      ". /tmp/scripts/configure_yumrepo.sh ${var.yumrepo_baseurl}",
-      "yum install -y puppetserver",
-      "/opt/puppetlabs/bin/puppet resource host ${var.git_server} ip=${var.git_server_ip}", #fix for absence of dns.
-      "/opt/puppetlabs/bin/puppet resource host ${var.repohost_fqdn} ip=${var.repohost_ip}", #fix for absence of dns. 
-      ". /tmp/scripts/install_puppetagent.sh --puppetserver_fqdn=puppetserver.vsphere.local --psk=123 --role=${var.role}",
-      "mkdir -p ${var.staging_code_dir}/",
-    ]
-  }
-
-  provisioner "file" {
-    source      = "../control-repo-staging/production/"
-    destination = "${var.staging_code_dir}"
-  }
-
-  provisioner "file" {
-    source      = "../r10k_id_rsa"
-    destination = "${var.staging_code_dir}/r10k_id_rsa"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x ${var.staging_code_dir}/scripts/*",
-      "puppet resource file /etc/puppetlabs/r10k ensure=directory && puppet resource file /etc/puppetlabs/r10k/r10k_id_rsa mode='0400' ensure=file", # content='${var.r10k_sshkey_file_content}'",
-      "cat ${var.staging_code_dir}/r10k_id_rsa > /etc/puppetlabs/r10k/r10k_id_rsa",
-      "FACTER_staging_puppetserver=r10k /opt/puppetlabs/bin/puppet apply -e \"include roles::puppetserver\" --hiera_config=${var.staging_code_dir}/hiera.yaml --modulepath=${var.staging_code_dir}/site:${var.staging_code_dir}/site/profiles/files/puppetserver/r10k_module_dependencies:${var.staging_code_dir}/modules",
-      "rm -rf /etc/puppetlabs/puppet/ssl",
-      "rm -f /etc/puppetlabs/puppetserver/ssl/ca/signed/*.pem",
-      "service puppetserver restart",
-      "puppet agent -tv",
-      "puppet agent -tv",
-      "if [ $? == '2' ]; then exit 0 ; fi ",
+      "chmod +x ${var.staging_code_dir}/bootstrap_puppetserver.sh",
+      "export GIT_USER=root",
+      "export GIT_SERVER=192.168.0.163",
+      "export GEM_SOURCE_URL=http://192.168.0.162:81",
+      "export YUMREPO_BASEURL=http://192.168.0.162/repo/yumrepos",
+      "export SSH_PRIVATE_KEY=${var.r10k_sshkey_file_content}",
+      "${var.staging_code_dir}/bootstrap_puppetserver.sh",
     ]
   }
 }
