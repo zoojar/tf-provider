@@ -76,13 +76,13 @@ resource "vsphere_virtual_machine" "puppetserver" {
   ###
 
   provisioner "file" {
-    source      = "../control-repo-staging/production/scripts/bootstrap_puppetserver.sh"
-    destination = "${var.staging_code_dir}"
+    source      = "../control-repo-staging/production/scripts"
+    destination = "${var.staging_code_dir}/production/scripts"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x ${var.staging_code_dir}/bootstrap_puppetserver.sh",
+      "chmod +x ${var.staging_code_dir}/production/scripts/bootstrap_puppetserver.sh",
       "export GIT_USER=root",
       "export GIT_SERVER=192.168.0.163",
       "export GEM_SOURCE_URL=http://192.168.0.162:81",
