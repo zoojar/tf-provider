@@ -82,8 +82,8 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
 
   provisioner "file" {
-    source      = "../control-repo-staging/production/scripts"
-    destination = "${var.staging_code_dir}"
+    source      = "../control-repo-staging/production/scripts/bootstrap_puppetserver.sh"
+    destination = "${var.staging_code_dir}/bootstrap_puppetserver.sh"
   }
 
   provisioner "remote-exec" {
