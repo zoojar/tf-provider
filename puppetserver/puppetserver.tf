@@ -90,7 +90,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
     inline = [
       "chmod +x ${var.staging_code_dir}/bootstrap_puppetserver.sh",
       "export GIT_USER=root",
-      "export GIT_SERVER=192.168.0.163",
+      "export GIT_SERVER=vcs.vsphere.local",
       "export GIT_SERVER_IP=192.168.0.163",
       "export GIT_SERVER_FQDN=vcs.vsphere.local",
       "export GEM_SOURCE_URL=http://192.168.0.162:81",
