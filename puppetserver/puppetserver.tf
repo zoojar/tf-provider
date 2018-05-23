@@ -88,7 +88,7 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "export GEM_SOURCE_URL=http://192.168.0.162:81",
       "export YUMREPO_BASEURL=http://192.168.0.162/repo/yumrepos",
       "export SSH_PRIVATE_KEY=${var.r10k_sshkey_file_content}",
-      "${var.staging_code_dir}/bootstrap_puppetserver.sh",
+      "${var.staging_code_dir}/production/scripts/bootstrap_puppetserver.sh",
     ]
   }
 }
