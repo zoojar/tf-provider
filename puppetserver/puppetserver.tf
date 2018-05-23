@@ -95,6 +95,8 @@ resource "vsphere_virtual_machine" "puppetserver" {
       "export GIT_SERVER_FQDN=vcs.vsphere.local",
       "export GEM_SOURCE_URL=http://192.168.0.162:81",
       "export YUMREPO_BASEURL=http://192.168.0.162/repo/yumrepos",
+      "export REPOHOST_IP=192.168.0.162",
+      "export REPOHOST_FQDN=repohost.vsphere.local",
       "export SSH_PRIVATE_KEY=\"${var.r10k_sshkey_file_content}\"",
       "${var.staging_code_dir}/bootstrap_puppetserver.sh",
     ]
