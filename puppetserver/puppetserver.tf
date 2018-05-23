@@ -75,6 +75,12 @@ resource "vsphere_virtual_machine" "puppetserver" {
   }
   ###
 
+  provisioner "remote-exec" {
+    inline = [
+      "rm -rf ${var.staging_code_dir} ; mkdir -p ${var.staging_code_dir}",
+    ] 
+  }
+
   provisioner "file" {
     source      = "../control-repo-staging/production/scripts"
     destination = "${var.staging_code_dir}"
